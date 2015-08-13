@@ -1,0 +1,133 @@
+<db-barchart definition>
+    <template>
+        <div class="chart-container">
+            <flex-box class="flex-end legend" template>
+                {#legend}
+                    <span class="symbol {color}"></span>
+                    <span>{label}</span>
+                {/legend}
+            </flex-box>
+            <div class="ct-chart ct-major-twelfth"></div>
+        </div>
+    </template>
+</db-barchart>
+<script>
+
+    Elliptical(function () {
+        $.component('db-barchart', $.db.chartBase, {
+
+            _initComponent: function () {
+                this._data.set('hidden',false);
+                this._data.set('model',null);
+                var chartType=(this.options.chartType===undefined) ? 'line' : this.options.chartType;
+                this._data.set('chartType',chartType);
+                this._data.set('chart',this._getChartNode());
+                this.$scope={};
+                this.$scope.legend=[];
+                this._showChart();
+            },
+
+            _renderChart:function(err,model){
+                var _chart;
+                this._data.set('model',model);
+                var data=model.data;
+                var opts=model.opts;
+                var legend=model.legend;
+                var node=this._data.get('chart')[0];
+                if(!node || node===undefined){
+                    node=this._getChartNode()[0];
+                }
+                var type=this._data.get('chartType');
+                if(type==='bar'){
+                    _chart=new Chartist.Bar(node, data,opts);
+                    this._data.set('chart',_chart);
+                }else{
+                    _chart=new Chartist.Line(node, data,opts);
+                    this._data.set('chart',_chart);
+                }
+                this._renderLegend(legend);
+                this._onDraw();
+            },
+
+            _onDraw:function(){
+                var chart=this._data.get('chart');
+                chart.on('draw', function(data) {
+                    if(data.type === 'line' || data.type === 'area') {
+                        data.element.animate({
+                            d: {
+                                begin: 2000 * data.index,
+                                dur: 2000,
+                                from: data.path.clone().scale(1, 0).translate(0, data.chartRect.height()).stringify(),
+                                to: data.path.clone().stringify(),
+                                easing: Chartist.Svg.Easing.easeOutQuint
+                            }
+                        });
+                    }
+                    if(data.type === 'bar') {
+                        data.element.animate({
+                            scale: {
+                                begin: 2000 * data.index,
+                                dur: 2000,
+                                from:0,
+                                to: 1,
+                                easing: Chartist.Svg.Easing.easeOutQuint
+                            }
+                        });
+                    }
+                });
+            },
+
+            _show:function(type){
+                var self=this;
+                if(this._data.get('hidden')){
+                    this._data.set('hidden',false);
+                    this._transitions(this.element,{opacity:0,duration:200},function(){
+                        self._showChartType(type);
+                    });
+                }else{
+                    this._showChartType(type);
+                }
+
+            },
+
+            _showChartType:function(type){
+                if(!(type===undefined || type===this._data.chartType)){
+                    this._data.chartType=type;
+                }
+                this._showByCurrentChartModel();
+            },
+
+            _showByCurrentChartModel:function(){
+                var model=this._data.get('model');
+                if(!model){
+                    this._showChart();
+                }else{
+                    this._renderChart(null,model);
+                }
+            },
+
+
+            _toggle:function(){
+                var chartType=this._data.get('chartType');
+                this._data.chartType=(chartType==='line') ? 'bar' : 'line';
+                this._showByCurrentChartModel();
+            },
+
+            _refresh:function(type){
+                if(type!==undefined){
+                    this._data.set('chartType',type);
+                }
+                this._showChart();
+            },
+
+
+            show:function(type){
+                this._show(type);
+            },
+
+            refresh:function(type){
+                this._refresh(type);
+            }
+        });
+    });
+</script>

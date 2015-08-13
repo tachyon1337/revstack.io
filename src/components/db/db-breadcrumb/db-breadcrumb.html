@@ -1,0 +1,20 @@
+<db-breadcrumb parse-attr definition>
+    <template>
+        <div>
+            <content select=".db-header"></content>
+        </div>
+        <flex-box class="align-center">
+            <span class="icon-[[icon]] icon"></span>
+            <content select=".date"></content>
+        </flex-box>
+    </template>
+</db-breadcrumb>
+<script>
+    Elliptical(function () {
+        $.element('db-breadcrumb', {
+            _initComponent: function () {
+
+            }
+        });
+    });
+</script>

@@ -1,0 +1,50 @@
+<db-easy-piechart definition>
+    <template>
+        <div class="chart-container">
+            <div class="easy-pie-chart"><span></span></div>
+        </div>
+    </template>
+</db-easy-piechart>
+<script>
+    Elliptical(function () {
+        $.component('db-easy-piechart', $.db.chartBase, {
+            options:{
+                selector:'.easy-pie-chart'
+            },
+            _initComponent: function () {
+                this._data.hidden=false;
+                this._data.model=null;
+                this._data.chart=this._getChartNode();
+                this.$scope={};
+                this.$scope.legend={};
+                this._showChart();
+            },
+
+            _renderChart:function(err,model){
+                this._data.model=model;
+                var data=model.data;
+                var opts=model.opts;
+                var size=(model.opts.size !==undefined) ? model.opts.size : 110;
+                var node=this._data.chart[0];
+                this._renderDataLabel(node,data,size);
+
+                new EasyPieChart(node,opts);
+
+            },
+
+            _renderDataLabel:function(node,data,size){
+                var pxSize=size + 'px';
+                var $node=$(node);
+                $node.css({
+                    height:pxSize,
+                    width:pxSize
+                });
+                $node.attr('data-percent',data);
+                $node.find('span').css({'line-height':pxSize})
+                        .text(data + '%');
+            }
+
+
+        });
+    });
+</script>

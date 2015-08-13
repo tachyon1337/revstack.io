@@ -1,0 +1,143 @@
+<section class="full-white">
+    <md-bar>
+        <side-panel>
+            {#order}
+                <img src="{userAvatar}" class="md-avatar size-50">
+            {/order}
+        </side-panel>
+        <main-panel>
+            {#order}
+                <h3><span>Order Details</span> <span class="primary icon">#{id}</span></h3>
+            {/order}
+        </main-panel>
+    </md-bar>
+    <md-layout ea="order-detail">
+        <side-panel class="border-right">
+            {#order}
+                <nav-list data-id="{id}">
+                    <menu-item>
+                        <span class="icon-shop header primary accent large"></span>
+                        <span></span>
+                    </menu-item>
+                    <menu-item action="delete" data-id="{id}">
+                        <span class="icon-delete main icon"></span>
+                        <span>Delete</span>
+                    </menu-item>
+                    <menu-item>
+                        <a href="/UserOrder/List/{userId}/1">
+                           <span class="icon-shop main icon"></span>
+                           <span>Order History</span>
+                        </a>
+                    </menu-item>
+                    <menu-item>
+                        <a href="/User/Detail/{userId}">
+                          <span class="icon-person main icon"></span>
+                          <span>Profile</span>
+                        </a>
+                    </menu-item>
+                </nav-list>
+            {/order}
+            {^order}
+                <nav-list>
+                    <menu-item>
+                        <span class="icon-shop header primary accent large"></span>
+                    </menu-item>
+                </nav-list>
+            {/order}
+        </side-panel>
+        <main-panel class="order-details" scroll>
+            {#order}
+                <div class="content-container small-font">
+                    <flex-box class="space-between responsive">
+                        <flex-box class="column">
+                            <span class="order-date">{date}</span>
+                            <span>Status</span>
+                            <span class="{status}" order-status>{status}</span>
+                            <br>
+                            {#statusOptions}
+                                <md-radio {@radio val="{option}" key="{status}" /} md-name="orderStatus" md-id="{option}" label="{option}"></md-radio>
+                            {/statusOptions}
+                        </flex-box>
+                        <flex-box class="column">
+                            <h4 class="margin-top-zero">Billing Address</h4>
+                            {#billingAddress}
+                                <span class="accent">{firstName} {lastName}</span>
+                                <span>{street}</span>
+                                <span>{city} , {state} {zipCode}</span>
+                                <span>{phone}</span>
+                                <a href="mailtp:{email}" class="link">{email}</a>
+                            {/billingAddress}
+                        </flex-box>
+                    </flex-box>
+                    <flex-box class="space-between responsive detail-row">
+                        <flex-box class="column">
+                            <h4>Order Details</h4>
+
+                            <div><span class="accent">ID:</span> <span class="order-info">{id}</span></div>
+                            <div><span class="accent">Order Date: </span> <span>{date}</span></div>
+                            <span class="order-total">{@extFormatCurrency value="{total}" /}</span>
+                        </flex-box>
+                        <flex-box class="column">
+                            <h4>Ship To</h4>
+                            {#shippingAddress}
+                                <span class="accent">{firstName} {lastName}</span>
+                                <span>{street}</span>
+                                <span>{city} , {state} {zipCode}</span>
+                                <span>{phone}</span>
+                                <a href="mailtp:{email}" class="link">{email}</a>
+                            {/shippingAddress}
+                        </flex-box>
+                        <flex-box class="column">
+                            <h4>Delivery & Payment</h4>
+                            {#payment}
+                                <div><span class="accent">Payment Type:</span> <span>{paymentType}</span></div>
+                                <div><span class="accent">Card Number:</span> <span>{cardNumber}</span></div>
+                                <div><span class="accent">Expiration Date:</span> <span>{expirationDate}</span></div>
+                            {/payment}
+                            {#shipping}
+                                <div class="shipping"><span class="accent">Shipping Type:</span> <span>{shippingType}</span></div>
+                                <div><span class="accent">Shipping Method:</span> <span>{shippingMethod}</span></div>
+                                <div><span class="accent">Ship Date:</span> <span>{dateShipped}</span></div>
+                            {/shipping}
+                        </flex-box>
+                    </flex-box>
+                </div>
+                <flex-grid class="detail-grid" breakpoint="700">
+                    <header>
+                        <column-header>Item</column-header>
+                        <column-header>Desc</column-header>
+                        <column-header>Price</column-header>
+                        <column-header>Quantity</column-header>
+                        <column-header>Total</column-header>
+                    </header>
+                    <section>
+                        {#details}
+                            <grid-item>{item}</grid-item>
+                            <grid-item>{description}</grid-item>
+                            <grid-item>{@extFormatCurrency value="{price}" /}</grid-item>
+                            <grid-item>{quantity}</grid-item>
+                            <grid-item>{@extFormatCurrency value="{total}" /}</grid-item>
+                        {/details}
+                    </section>
+                </flex-grid>
+                <flex-box class="flex-end">
+                         <flex-box class="total-box">
+                             <div class="accent">Subtotal</div>
+                             <div>{@extFormatCurrency value="{subtotal}" /}</div>
+                             <div class="accent">Sales Tax</div>
+                             <div>{@extFormatCurrency value="{salesTax}" /}</div>
+                             <div class="accent">Shipping</div>
+                             <div>{@extFormatCurrency value="{shipTotal}" /}</div>
+                             <div class="accent">Discount</div>
+                             <div class="discount">-{@extFormatCurrency value="{discount}" /}</div>
+                             <div class="accent">Total</div>
+                             <div class="total">{@extFormatCurrency value="{total}" /}</div>
+                         </flex-box>
+                </flex-box>
+            {/order}
+            {^order}
+                <p style="padding:1em;">There is no order currently associated with the requested id...</p>
+            {/order}
+        </main-panel>
+    </md-layout>
+</section>

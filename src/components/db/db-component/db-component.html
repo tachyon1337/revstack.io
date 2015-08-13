@@ -1,0 +1,115 @@
+<link rel="import" href="../db-settings/db-settings.html" property="elliptical">
+<db-component parse-attr definition>
+    <template>
+        <header>
+            <div><span>[[name]]</span> <span class="subtitle">[[subtitle]]</span></div>
+            <flex-box class="flex-end">
+                <div data-settings><span class="icon-settings"></span></div>
+                <div data-close><span class="icon-close"></span></div>
+            </flex-box>
+        </header>
+        <section>
+            <content></content>
+        </section>
+    </template>
+</db-component>
+<script>
+    Elliptical(function () {
+        $.component('db-component', {
+            options:{
+                serviceTimeout:300
+            },
+
+            _initComponent: function () {
+                if(this.options.service){
+                    var service=this._getService();
+                    service.setElement(this.element);
+                }
+                var key=this.options.name + this.options.subtitle;
+                this._data.set('key',key);
+            },
+
+            _getService:function(){
+                var _service=this._data.get('service');
+                if(_service){
+                    return _service;
+                }else{
+                    var Service=this.service();
+                    var service=new Service();
+                    this._data.set('service',service);
+                    return service;
+                }
+            },
+
+            _events:function(){
+                var click=this._data.click;
+                this._event(this.element,click,'[data-settings]',this._onOpenSettings.bind(this));
+                this._event(this.element,click,'[data-close]',this._onHide.bind(this));
+                this._event(this.element,click,'[action]',this._onAction.bind(this));
+            },
+
+            _onTemplateLoaded:function(){
+                var scope=this.options.scope;
+                if(scope ){
+                    this._setComponentScope();
+                }
+            },
+
+            _onOpenSettings:function(event){
+                var settings=this.element.find('db-settings');
+                settings.dbSettings('show');
+            },
+
+            _setComponentScope:function(){
+                var service=this._getService();
+                service.get({},this._setScope.bind(this));
+            },
+
+            _setScope:function(err,data){
+                var timeout=this.options.serviceTimeout;
+                var scope=this.options.scope;
+                var $scope=this.$scope;
+                var self=this;
+                setTimeout(function(){
+                    $scope[scope]=data;
+                    self.$rebind();
+                    self._onSetScope();
+                },timeout);
+
+            },
+
+            _hide:function(){
+                this.element[0].remove();
+                var service=this._getService();
+                var key=this._data.get('key');
+                service.hide(key);
+            },
+
+            _onSetScope:function(){
+                var service=this._getService();
+                service.onAfterGet(this.element,this.$scope);
+            },
+
+            _onHide:function(){
+                this._hide();
+            },
+
+            _onAction:function(event){
+                var target=$(event.currentTarget);
+                var action=target.attr('action');
+                if(action==='hide'){
+                    this._hide();
+                }else{
+
+                }
+            },
+
+            _onDestroy:function(){
+                var service=this._data.get('service');
+                if(service){
+                    service=null;
+                }
+            }
+        });
+    });
+</script>

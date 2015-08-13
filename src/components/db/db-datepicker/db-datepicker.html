@@ -1,0 +1,151 @@
+<db-datepicker parse-attr definition>
+    <template>
+      <div>
+          <header>Enter a new date range for your dashboard display</header>
+          <main>
+              <flex-box>
+                  <span class="icon-access-time"></span>
+                  <flex-box class="column">
+                      <span>Select Range</span>
+                      <md-datepicker placeholder="Start Date" class="native" md-id="start-date"></md-datepicker>
+                      <md-datepicker placeholder="End Date" class="native" md-id="end-date"></md-datepicker>
+                      <hr>
+                  </flex-box>
+              </flex-box>
+              <flex-box>
+                  <span class="icon-today"></span>
+                  <flex-box class="column">
+                      <span action="today">Today</span>
+                      <hr>
+                  </flex-box>
+              </flex-box>
+              <flex-box>
+                  <span class="icon-business"></span>
+                  <flex-box class="column">
+                      <span action="month-to-date">Month-to-Date</span>
+                      <hr>
+                  </flex-box>
+              </flex-box>
+              <flex-box>
+                  <span class="icon-business"></span>
+                  <flex-box class="column">
+                      <span action="year-to-date">Year-to-Date</span>
+                      <hr>
+                  </flex-box>
+              </flex-box>
+          </main>
+      </div>
+    </template>
+</db-datepicker>
+<script>
+
+    Elliptical(function () {
+        $.component('db-datepicker', {
+            _initComponent: function () {
+                if(!this._device.touch){
+                    $('body').addClass('db-datepicker');
+                }
+                this._data.set('type',null);
+                this._initRange();
+            },
+
+            _events:function(){
+                var click=this._data.click;
+                this._event(this.element,click,'[action]',this._onClick.bind(this));
+                this._event($(window),'md.datepicker.select',this._onSelect.bind(this));
+                this._event($(window),'md.dialog.action',this._onDialogClose.bind(this));
+            },
+
+            _initRange:function(){
+                var range={
+                    start:null,
+                    end:null
+                };
+                this._data.set('range',range);
+            },
+
+            _setType:function(type){
+                this._data.set('type',type);
+            },
+
+            _onClick:function(event){
+                var target=$(event.currentTarget);
+                this._setTarget(target);
+            },
+
+            _setTarget:function(target){
+                this._clearCurrent();
+                this._setActive(target);
+                var type=target.attr('action');
+                this._setType(type);
+            },
+
+            _clearCurrent:function(){
+                this._removeActive();
+                this._clearDatePickers();
+            },
+
+            _onSelect:function(event,data){
+                var range=this._data.get('range');
+                if(data.id==='startDate'){
+                    range.start=data.value;
+                }else{
+                    range.end=data.value;
+                }
+                this._data.set('type',null);
+                this._removeActive();
+            },
+
+            _setActive:function(target){
+                target.addClass('active');
+            },
+
+            _removeActive:function(){
+                this.element.find('[action]').removeClass('active');
+            },
+
+            _getDatePicker:function(id){
+                return this.element.find('[md-id="' + id + '"]');
+            },
+
+            _clearDatePickers:function(){
+                var startDate=this._getDatePicker('start-date');
+                var endDate=this._getDatePicker('end-date');
+                startDate.mdDatepicker('clear');
+                endDate.mdDatepicker('clear');
+            },
+
+            _onDialogClose:function(event,data){
+                var service=this.service();
+                var type=this._data.get('type');
+                var obj=null;
+                if(type){
+                    service.set(type,null);
+                }else{
+                    var range=this._data.get('range');
+                    if(range.start && range.end){
+                        service.set('range',range);
+                    }
+                }
+
+            },
+
+            _onDestroy:function(){
+                if(!this._device.touch){
+                    $('body').removeClass('db-datepicker');
+                }
+            },
+
+            setTarget:function(type){
+
+            },
+
+            clear:function(){
+                this._clearCurrent();
+
+            }
+
+
+        });
+    });
+</script>

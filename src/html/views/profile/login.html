@@ -1,0 +1,21 @@
+<section class="content">
+    <h4 class="padding-bottom">Account Login</h4>
+
+    <div class="md-content">
+        <br>
+        <br>
+        <flex-box class="column">
+            <ui-form class="md form-width" service="Profile">
+                <form role="form" method="{method}" name="Profile">
+
+                    <md-input icon="email" prefix="prefix" type="text" required placeholder="{@placeholder value="{email_placeholder}"  defaultValue="Email" /}" md-id="email" md-name="email" value="{email}"></md-input>
+
+                    <md-input icon="lock-open" prefix="prefix" type="password" required placeholder="{@placeholder value="{password_placeholder}"  defaultValue="Password" /}" md-id="password" md-name="password" value="{password}"></md-input>
+
+
+                    <paper-submit class="primary">Submit</paper-submit>
+                </form>
+            </ui-form>
+        </flex-box>
+    </div>
+</section>

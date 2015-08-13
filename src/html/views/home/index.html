@@ -1,0 +1,49 @@
+<link rel="import" href="components/db/db-chart/db-chart.html">
+<link rel="import" href="components/db/db-component/db-component.html" property="elliptical">
+<link rel="import" href="components/db/db-barchart/db-barchart.html" property="elliptical">
+<link rel="import" href="components/db/db-donutchart/db-donutchart.html" property="elliptical">
+<link rel="import" href="components/db/db-easy-piechart/db-easy-piechart.html" property="elliptical">
+<link rel="import" href="components/custom/dashboard-carousel/dashboard-carousel.html" property="elliptical">
+
+<section class="content stretch">
+    <paper-fab icon="add" class="md fab" ea="fab" fab-type="dashboard"></paper-fab>
+    <db-breadcrumb icon="event">
+        <h4 class="db-header">Dashboard</h4>
+        <span class="date" data-id="date-range"></span>
+    </db-breadcrumb>
+    <flex-box class="space-between flex-cards" ea="cards">
+        <md-icon-card icon="group" class="users">
+            <h2 data-id="users"></h2>
+            <span>New Users</span>
+        </md-icon-card>
+        <md-icon-card icon="shopping-cart" class="shopping">
+            <h2 data-id="orders"></h2>
+            <span>New Orders</span>
+        </md-icon-card>
+        <md-icon-card icon="attach-money" class="sales">
+            <h2 data-id="sales"></h2>
+            <span>Sales</span>
+        </md-icon-card>
+        <md-icon-card icon="visibility" class="visits">
+            <h2 data-id="visits"></h2>
+            <span>Visits</span>
+        </md-icon-card>
+    </flex-box>
+    <md-grid-box>
+        <md-column width-70>
+            {#displayModel}
+                {>"shared.dashboard.statistics-graph"  /}
+                {>"shared.dashboard.trends-graph" /}
+                {>"shared.dashboard.realtime-graph" /}
+                {>"shared.dashboard.social-graph" /}
+            {/displayModel}
+        </md-column>
+        <md-column width-30>
+            {#displayModel}
+                {>"shared.dashboard.browser-usage" /}
+                {>"shared.dashboard.device-usage" /}
+            {/displayModel}
+
+        </md-column>
+    </md-grid-box>
+</section>

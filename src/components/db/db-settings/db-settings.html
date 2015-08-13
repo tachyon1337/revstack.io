@@ -1,0 +1,14 @@
+<db-settings definition>
+    <template>
+        <content></content>
+    </template>
+</db-settings>
+<script>
+    Elliptical(function () {
+        $.element('db-settings', $.md.mdDropdown, {
+            _initElement: function () {
+                this._super();
+            }
+        });
+    });
+</script>

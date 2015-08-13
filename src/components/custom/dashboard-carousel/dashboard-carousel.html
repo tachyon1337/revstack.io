@@ -1,0 +1,28 @@
+<link rel="import" href="../../ui/ui-carousel/ui-carousel.html" property="elliptical">
+<dashboard-carousel definition>
+    <template>
+        <ui-carousel animation="slide" auto="true"  ui-template max-intervals="10">
+            {#social}
+            <carousel-item>
+                <flex-box>
+                    <md-avatar id="avatar-2" md-class="size-30" default-url="/images/assets/default-avatar-white.png" camel-case="false" content-init></md-avatar>
+                    <flex-box class="column description">
+                        <flex-box>
+                            <span class="roboto-medium">{name}</span>
+                            <span class="time">{time}</span>
+                        </flex-box>
+                        <p>
+                            <span>{content}</span>
+                        </p>
+                    </flex-box>
+                </flex-box>
+            </carousel-item>
+            {/social}
+        </ui-carousel>
+    </template>
+</dashboard-carousel>
+<script>
+    Elliptical(function () {
+        $.element('dashboard-carousel', {});
+    });
+</script>

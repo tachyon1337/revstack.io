@@ -1,0 +1,88 @@
+<section class="full-white">
+    <paper-fab icon="add" class="md fab" ea="fab" fab-type="orders"></paper-fab>
+    <md-bar>
+        <side-panel>
+            <span class="icon-shop-two main icon ui-tooltip" data-title="Orders" data-css="indigo"
+                  ea="tooltip"></span>
+        </side-panel>
+        <main-panel>
+            <flex-box>
+                <a href="/Order/List/1">
+                    <span class="icon-cached refresh ui-tooltip" data-title="Refresh" data-css="grey"
+                          ea="tooltip"></span>
+                </a>
+                {#pagination}
+                    <div class="labels">
+                        <span>{beginRecord}-{endRecord}</span>
+                        <span>of</span>
+                        <span class="accent" data-id="to-label" ea="to-label">{count}</span>
+                        <span class="accent">{label}</span>
+                    </div>
+                {/pagination}
+            </flex-box>
+            <md-button-group>
+                {#pagination}
+                    <a href="{prevPage}">
+                        <span class="icon-chevron-left"></span>
+                    </a>
+                    <a href="{nextPage}">
+                        <span class="icon-chevron-right"></span>
+                    </a>
+                {/pagination}
+            </md-button-group>
+        </main-panel>
+    </md-bar>
+    <md-layout ea="order-grid">
+        <side-panel class="border-right">
+            <nav-list>
+                <menu-item>
+                    <span class="icon-shop header primary accent large"></span>
+                </menu-item>
+                <menu-item action="delete" class="disabled">
+                    <span class="icon-delete main icon"></span>
+                    <span>Delete</span>
+                </menu-item>
+                <menu-item action="view" class="disabled">
+                    <span class="icon-search main icon"></span>
+                    <span>View</span>
+                </menu-item>
+            </nav-list>
+        </side-panel>
+        <main-panel class="padding">
+            <md-grid class="orders-grid" service="Search" refresh="/Order/List/1" breakpoint="900">
+                <header>
+                    <column-header empty></column-header>
+                    <column-header field="date" sort="true">Order Date</column-header>
+                    <column-header field="billingAddress.lastName" sort="true">Placed By</column-header>
+                    <column-header field="status" sort="true">Status</column-header>
+                    <column-header field="shippingAddress.lastName" sort="true">Ship To</column-header>
+                    <column-header>Quantity</column-header>
+                    <column-header field="total" sort="true">Total</column-header>
+                </header>
+                <section>
+                    {#orders}
+                        <grid-item data-id="{id}">
+                            <md-checkbox md-id="cb{$idx}" data-id="{id}"></md-checkbox>
+                        </grid-item>
+                        <grid-item data-id="{id}">{date}</grid-item>
+                        {#billingAddress}
+                            <grid-item data-id="{id}">{firstName} {lastName}</grid-item>
+                        {/billingAddress}
+                        <grid-item data-id="{id}"><span class="status {status}">{status}</span></grid-item>
+                        {#shippingAddress}
+                            <grid-item data-id="{id}">{firstName} {lastName}</grid-item>
+                        {/shippingAddress}
+                        <grid-item data-id="{id}">{quantity}</grid-item>
+                        <grid-item data-id="{id}">{total}</grid-item>
+                    {/orders}
+                </section>
+                <footer>
+                    {>"shared.grid-pagination"/}
+                </footer>
+            </md-grid>
+            {^orders}
+                <p style="padding:1em;">There are no orders available...</p>
+            {/orders}
+        </main-panel>
+    </md-layout>
+</section>

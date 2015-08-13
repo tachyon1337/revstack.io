@@ -1,0 +1,78 @@
+<script src="chartist.js"></script>
+<script src="raphael.js"></script>
+<script src="morris.js"></script>
+<script src="easypiechart.js"></script>
+<link href="morris.css" rel="stylesheet">
+<script>
+    Elliptical(function(){
+        $.component('db.chartBase',{
+            options:{
+                selector:'.ct-chart'
+            },
+
+            _getChartNode:function(){
+                return this.element.find(this.options.selector);
+            },
+
+            _showChart:function(){
+                var service=this.service();
+                service.get({},this._renderChart.bind(this));
+            },
+
+            _renderLegend:function(legend){
+                this.$scope.legend=legend;
+            },
+
+            _renderChart: $.noop,
+
+            _onDestroy:function(){
+                if(this._data.chart){
+                    this._data.chart=null;
+                }
+            },
+
+            _hide:function(){
+                if(!this._data.hidden){
+                    this._data.hidden=true;
+                    this._transitions(this.element,{opacity:0,duration:300});
+                }
+            },
+
+            _show: function(){
+                if(this._data.hidden){
+                    this._data.hidden=false;
+                    this._transitions(this.element,{opacity:1,duration:200});
+                }
+            },
+
+            _toggle: function(){
+                if (this._data.hidden){
+                    this._show();
+                }else{
+                    this._hide();
+                }
+            },
+
+            _refresh:function(){
+                this._showChart();
+            },
+
+            toggle:function(){
+                this._toggle();
+            },
+
+            hide:function(){
+                this._hide();
+            },
+
+            show:function(){
+                this._show();
+            },
+
+            refresh:function(){
+                this._refresh();
+            }
+
+        });
+    });
+</script>

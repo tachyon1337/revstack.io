@@ -1,0 +1,87 @@
+<md-scroll selector="[md-scroll]" camel-case="false"></md-scroll>
+<section class="full-white">
+    <md-bar>
+        <side-panel>
+            <a href="/User/Create/New">
+                <span class="icon-person-add main icon ui-tooltip" data-title="New User" data-css="main-tooltip" ea="tooltip"></span>
+            </a>
+        </side-panel>
+        <main-panel>
+            <flex-box>
+                <a href="/User/List/1">
+                    <span class="icon-cached refresh ui-tooltip" data-title="Refresh" data-css="grey" ea="tooltip"></span>
+                </a>
+                {#pagination}
+                    <div class="labels">
+                        <span>{beginRecord}-{endRecord}</span>
+                        <span>of</span>
+                        <span class="accent" data-id="to-label" ea="to-label">{count}</span>
+                        <span class="accent">{label}</span>
+                    </div>
+                {/pagination}
+            </flex-box>
+            <md-button-group>
+                {#pagination}
+                    <a href="{prevPage}">
+                        <span class="icon-chevron-left"></span>
+                    </a>
+                    <a href="{nextPage}">
+                        <span class="icon-chevron-right"></span>
+                    </a>
+                {/pagination}
+            </md-button-group>
+        </main-panel>
+    </md-bar>
+    <md-layout ea="user-list">
+        <side-panel>
+            <nav-list>
+                <menu-item>
+                    <span class="icon-person header primary accent"></span>
+                </menu-item>
+                <menu-item action="delete" class="disabled">
+                    <span class="icon-delete main icon"></span>
+                    <span>Delete</span>
+                </menu-item>
+                <menu-item action="edit"  class="disabled">
+                    <span class="icon-edit main icon"></span>
+                    <span>Edit</span>
+                </menu-item>
+                <menu-item action=location" class="disabled">
+                    <span class="icon-location-on main icon"></span>
+                    <span>Location</span>
+                </menu-item>
+            </nav-list>
+        </side-panel>
+        <main-panel md-scroll>
+            <md-list>
+                {#users}
+                    <li data-id="{id}">
+                        <flex-box class="person">
+                            <md-checkbox md-id="cb{$idx}" data-id="{id}"></md-checkbox>
+                            <img src="{avatar}" class="md-avatar">
+                            <flex-box class="column">
+                                <a href="/User/Detail/{id}">{firstName} {lastName}</a>
+                                <p>
+                                    <span>{street}</span> <span class="accent">{city} {state}, {zipCode}</span>
+                                </p>
+                                <p>
+                                    <span>{phone}</span>
+                                    <a href="mailto:{email}" class="accent">{email}</a>
+                                </p>
+                            </flex-box>
+                        </flex-box>
+
+                        {@gt key=orderNumber value=0}
+                            <a class="md-icon-badge purple-badge" href="/UserOrder/List/{id}/1">
+                                <span class="md-badge">{orderNumber}</span>
+                                <span class="icon-shop"></span>
+                            </a>
+                        {/gt}
+
+                        <a class="small-grey user-date">{dateRegistered}</a>
+                    </li>
+                {/users}
+            </md-list>
+        </main-panel>
+    </md-layout>
+</section>

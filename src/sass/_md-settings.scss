@@ -1,0 +1,45 @@
+
+$Colors:(
+        primary:#689f38,
+        primary-accent:map-deep-get($MD-Color,light-green,primary,400,value),
+        main:map-deep-get($MD-Color,indigo,primary,300,value),
+        secondary:map-deep-get($MD-Color,deep-purple,primary,300,value),
+        secondary-accent:map-deep-get($MD-Color,purple,primary,300,value),
+        white:#fff,
+        medium-white:#f2f2f2,
+        off-white:#eee,
+        grey:#cdcdcd,
+        medium-grey:#999,
+        dark-grey:#666,
+        black:#333,
+        disabled:#d8d8d8,
+        custom-100:#616161,
+        custom-200:#0f9d58,
+        custom-300:#da4336,
+        custom-400:#757575,
+        custom-500:#525252,
+        custom-600:#c3e1a9,
+        custom-700:#b6d9d6,
+        custom-800:#eb8046,
+        custom-900:#a7a7a5
+);
+
+$palette-primary:map-get($Colors,primary);
+$palette-primary-text:map-get($Colors,white);
+$palette-primary-2:map-get($Colors,custom-300);
+$palette-primary-2-text:map-get($Colors,white);
+$palette-primary-3:map-get($Colors,custom-200);//
+$palette-primary-3-text:map-get($Colors,white);
+$palette-primary-accent:map-get($Colors,medium-grey);
+$palette-primary-accent-text:map-get($Colors,white);
+$palette-secondary:map-get($Colors,dark-grey);
+$palette-secondary-text:map-get($Colors,white);
+$palette-secondary-accent:map-get($Colors,disabled);
+$palette-secondary-accent-text:map-get($Colors,white);
+$palette-label:map-get($Colors,medium-grey);
+$palette-label-accent:darken($palette-label,5%);
+$palette-label-dark-light:$md-black-default;
+$palette-placeholder:rgba(color-rgb($palette-label),0.54);
+$palette-hint:rgba(color-rgb($palette-label),0.26);
+$palette-switch:#F1F1F1;
+$palette-switch-track:map-deep-get($Colors,medium-grey);

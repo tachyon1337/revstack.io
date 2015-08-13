@@ -1,0 +1,10 @@
+{
+  "path":"./public",
+  "port":"8080",
+  "src":"./app/**/*.js",
+  "dest":"./public/scripts",
+  "destFile":"app.js",
+  "livePort":"9040",
+  "liveHost":"127.0.0.1"
+
+}

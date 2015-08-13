@@ -1,0 +1,159 @@
+///media queries---------------------------------------------------
+
+
+///desktop
+@include large-content() {
+  .flex-cards{
+    @include flex-wrap(wrap);
+  }
+}
+
+@include media-breakpoint(1400px){
+  md-grid{
+    font-size:14px;
+    @include span-icon{
+      font-size:18px;
+    }
+  }
+  side-panel{
+    max-width:100px;
+    min-width:100px !important;
+  }
+}
+
+///touch
+@include touch-content() {
+
+  .md-toolbar{
+    padding-right:1em;
+  }
+  side-panel{
+    max-width:75px;
+    min-width:75px !important;
+    menu-item{
+      &>*{
+        display:none;
+      }
+      @include span-icon{
+        display:flex;
+        display:-webkit-flex;
+      }
+
+    }
+  }
+  nav-list{
+    .header{
+      margin-left: -.25em;
+      &.large{
+        height:50px;
+        width:50px;
+        font-size:36px;
+      }
+    }
+  }
+  md-morph{
+    margin-right:auto;
+  }
+  .search-box{
+    width:220px;
+    margin-left:40px;
+    input[type=text]{
+      border:0 !important;
+      width:200px !important;
+      &:focus{
+        border:0 !important;
+        box-shadow:none !important;
+        &:not([readonly]){
+          border:0 !important;
+          box-shadow:none !important;
+        }
+      }
+      &::-webkit-input-placeholder {
+        opacity:0;
+      }
+      &::-moz-placeholder {
+        opacity:0;
+      }
+      &::-o-placeholder {
+        opacity:0;
+      }
+      &:-ms-input-placeholder {
+        opacity:0;
+      }
+    }
+    button{
+      border:0 !important
+    }
+    input[type=text]:focus:not([readonly]) + label + button {
+      border-bottom: 0 !important;
+      box-shadow: none !important;
+    }
+  }
+  md-menu{
+    margin-top:1em;
+  }
+
+  .back-arrow{
+    margin-left:40px;
+  }
+
+}
+
+
+///medium
+@include medium-content() {
+
+}
+
+@include media-breakpoint(763px){
+  .user-date{
+    display:none;
+  }
+}
+
+@include media-breakpoint(1400px){
+  .hide-for-large-screen-down{
+      display:none;
+  }
+  side-panel{
+    menu-item{
+      &>*{
+        display:none;
+      }
+      @include span-icon{
+        display:flex;
+        display:-webkit-flex;
+      }
+
+    }
+  }
+}
+
+///small
+@include small-content() {
+  md-icon-card{
+    &:nth-of-type(3){
+      margin-bottom:1.5em;
+    }
+  }
+  .search-box {
+    width: 220px;
+    margin-left:0;
+  }
+  md-toolbar{
+    [data-profile-name],[data-settings]{
+      display:none;
+    }
+  }
+  db-breadcrumb .icon {
+    font-size:24px;
+  }
+  db-breadcrumb > flex-box {
+    font-size: 12px;
+  }
+}
+
+
+
+
+

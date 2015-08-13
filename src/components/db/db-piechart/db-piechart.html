@@ -1,0 +1,40 @@
+<db-piechart definition>
+    <template>
+        <div class="chart-container">
+            <flex-box class="column legend" template>
+                {#legend}
+                <flex-box class="align-center">
+                    <span class="symbol {color}"></span>
+                    <span>{label}</span>
+                </flex-box>
+                {/legend}
+            </flex-box>
+            <div class="ct-chart ct-golden-section"></div>
+        </div>
+    </template>
+</db-piechart>
+<script>
+    Elliptical(function () {
+        $.component('db-piechart', $.db.chartBase, {
+            _initComponent: function () {
+                this._data.hidden=false;
+                this._data.model=null;
+                this._data.chart=this._getChartNode();
+                this.$scope={};
+                this.$scope.legend=[];
+                this._showChart();
+            },
+
+            _renderChart:function(err,model){
+                this._data.model=model;
+                var data=model.data;
+                var opts=model.opts;
+                var legend=model.legend;
+                var node=this._data.chart[0];
+                new Chartist.Pie(node,data,opts);
+                this._renderLegend(legend);
+            }
+
+        });
+    });
+</script>

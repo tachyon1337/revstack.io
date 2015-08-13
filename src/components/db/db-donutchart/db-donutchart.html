@@ -1,0 +1,47 @@
+<db-donutchart definition>
+    <template>
+        <div class="chart-container">
+            <flex-box class="column legend" template>
+                {#legend}
+                <flex-box class="flex-end align-center">
+                    <span>{label}</span>
+                </flex-box>
+                {/legend}
+            </flex-box>
+            <div class="donut-chart"></div>
+        </div>
+    </template>
+</db-donutchart>
+<script>
+    Elliptical(function () {
+        $.component('db-donutchart', $.db.chartBase, {
+            options:{
+                selector:'.donut-chart'
+            },
+            _initComponent: function () {
+                this._data.hidden=false;
+                this._data.model=null;
+                this._data.chart=this._getChartNode();
+                this.$scope={};
+                this.$scope.legend={};
+                this._showChart();
+            },
+
+            _renderChart:function(err,model){
+                this._data.model=model;
+                var data=model.data;
+                var colors=model.colors;
+                var node=this._data.chart[0];
+                Morris.Donut({
+                    element: node,
+                    data: data,
+                    colors:colors
+                });
+                var legend=model.legend;
+                this._renderLegend(legend);
+            }
+
+
+        });
+    });
+</script>

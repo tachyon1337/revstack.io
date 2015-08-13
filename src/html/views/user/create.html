@@ -1,0 +1,70 @@
+<section class="full-white">
+    <md-bar>
+        <side-panel>
+            {#user}
+                <img src="{avatar}" class="md-avatar size-50">
+            {/user}
+        </side-panel>
+        <main-panel>
+            {#user}
+                <h3>Create Account</h3>
+            {/user}
+        </main-panel>
+    </md-bar>
+    <md-layout ea="user">
+        <side-panel class="border-right" ea="user-detail">
+            {#user}
+                <nav-list>
+                    <menu-item>
+                        <span class="icon-person header primary accent"></span>
+                        <span></span>
+                    </menu-item>
+                </nav-list>
+            {/user}
+            {^user}
+                <div class="primary-icon">
+                    <span class="icon-person"></span>
+                </div>
+            {/user}
+        </side-panel>
+        <main-panel class="padding" scroll>
+            {#user}
+                <ui-form class="md form-width" service="User">
+                    <form role="form" method="post" name="User">
+                        <input type="hidden" id="active" name="active" value="true">
+                        <md-input icon="edit" prefix="prefix" type="text" required
+                                  placeholder="{@placeholder value="{firstName_placeholder}"  defaultValue="First Name" /}" md-id="firstName" md-name="firstName" value="{firstName}"></md-input>
+                        <md-input icon="edit" prefix="prefix" type="text" required
+                                  placeholder="{@placeholder value="{lastName_placeholder}"  defaultValue="Last Name" /}"
+                                  md-id="lastName" md-name="lastName" value="{lastName}"></md-input>
+                        <md-input icon="email" prefix="prefix" type="text" required
+                                  placeholder="{@placeholder value="{email_placeholder}"  defaultValue="Email" /}"
+                                  md-id="email" md-name="email" value="{email}"></md-input>
+                        <md-input icon="lock-open" prefix="prefix" type="password" required
+                                  placeholder="{@placeholder value="{password_placeholder}"  defaultValue="Password" /}"
+                                  md-id="password" md-name="password" value="{password}"></md-input>
+                        <md-input icon="edit" prefix="prefix" type="text" required
+                                  placeholder="{@placeholder value="{street_placeholder}"  defaultValue="Street Address" /}"
+                                  md-id="street" md-name="street" value="{street}"></md-input>
+                        <md-input icon="location-city" prefix="prefix" type="text" required
+                                  placeholder="{@placeholder value="{city_placeholder}"  defaultValue="City" /}"
+                                  md-id="city" md-name="city" value="{city}"></md-input>
+                        <md-state-select icon="my-location" md-id="state" md-name="state" md-select prefix="prefix" value="{state}" required></md-state-select>
+                        <md-input icon="location-on" prefix="prefix" type="text"
+                                  placeholder="{@placeholder value="{city_placeholder}"  defaultValue="Zip Code" /}"
+                                  md-id="zipCode" md-name="zipCode" value="{zipCode}" required></md-input>
+                        <md-input icon="local-phone" prefix="prefix" type="text"
+                                  placeholder="{@placeholder value="{phone_placeholder}"  defaultValue="Phone" /}"
+                                  md-id="phone" md-name="phone" value="{phone}" required></md-input>
+                        <md-input icon="image" prefix="prefix" type="text"
+                                  placeholder="{@placeholder value="{avatar_placeholder}"  defaultValue="Avatar Url" /}"
+                                  md-id="avatar" md-name="avatar" value="{avatar}"></md-input>
+
+                        <paper-submit class="primary">Create User</paper-submit>
+                    </form>
+                </ui-form>
+            {/user}
+
+        </main-panel>
+    </md-layout>
+</section>

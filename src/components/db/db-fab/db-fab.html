@@ -1,0 +1,17 @@
+<link rel="import" href="../../../elements/polymer/polymer/polymer.html">
+<db-fab parse-attr definition>
+    <template>
+        <paper-fab icon="add" class="floating-button"></paper-fab>
+    </template>
+</db-fab>
+<script>
+    Elliptical(function () {
+        $.element('db-fab', {
+            _initElement: function () {
+               Polymer.Base.importHref('../../../elements/polymer/paper-fab/paper-fab.html',function(){
+                   Polymer.Base.distributeContent();
+               });
+            }
+        });
+    });
+</script>

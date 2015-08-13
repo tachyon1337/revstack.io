@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>My App</title>
+    <script src="scripts/elliptical.bootstrap.js"></script><!-- bootstraps the Elliptical closure -->
+    <script src="scripts/platform.js"></script><!-- web components polyfill-->
+    <link href="css/app.css" rel="stylesheet"><!-- compiled sass output ->
+    <!-- web component definitions-->
+    <link rel="import" href="components/polymer/iron-icons/iron-icons.html">
+    <link rel="import" href="components/polymer/paper-drawer-panel/paper-drawer-panel.html">
+    <link rel="import" href="components/polymer/paper-header-panel/paper-header-panel.html">
+    <link rel="import" href="components/polymer/paper-progress/paper-progress.html">
+    <link rel="import" href="components/polymer/paper-toast/paper-toast.html">
+    <link rel="import" href="components/polymer/paper-fab/paper-fab.html">
+    <link rel="import" href="components/polymer/paper-toggle-button/paper-toggle-button.html">
+    <link rel="import" href="components/polymer/paper-ripple/paper-ripple.html">
+    <link rel="import" href="components/paper/paper-service/paper-service.html" property="elliptical">
+    <link rel="import" href="components/paper/paper-submit/paper-submit.html">
+    <link rel="import" href="components/md/md-preloader/md-preloader.html" property="elliptical">
+    <link rel="import" href="components/md/md-layout/md-layout.html">
+    <link rel="import" href="components/md/md-avatar/md-avatar.html" property="elliptical">
+    <link rel="import" href="components/md/md-dropdown/md-dropdown.html" property="elliptical">
+    <link rel="import" href="components/md/md-brand/md-brand.html" property="elliptical">
+    <link rel="import" href="components/md/md-ripple/ripple-effect.html">
+    <link rel="import" href="components/md/md-input/md-input.html" property="elliptical">
+    <link rel="import" href="components/md/md-select/md-select.html" property="elliptical">
+    <link rel="import" href="components/md/md-input-icon-button/md-input-icon-button.html" property="elliptical">
+    <link rel="import" href="components/md/md-menu/md-menu.html" property="elliptical">
+    <link rel="import" href="components/md/md-icon-card/md-icon-card.html" property="elliptical">
+    <link rel="import" href="components/md/md-icon-badge/md-icon-badge.html" property="elliptical">
+    <link rel="import" href="components/md/md-fab/md-fab.html" property="elliptical">
+    <link rel="import" href="components/md/md-fab-transform/md-fab-transform.html" property="elliptical">
+    <link rel="import" href="components/md/md-dialog/md-dialog.html" property="elliptical">
+    <link rel="import" href="components/md/md-datepicker/md-datepicker.html" property="elliptical">
+    <link rel="import" href="components/md/md-scroll/md-scroll.html" property="elliptical">
+    <link rel="import" href="components/md/md-switch/md-switch.html" property="elliptical">
+    <link rel="import" href="components/md/md-checkbox/md-checkbox.html" property="elliptical">
+    <link rel="import" href="components/md/md-radio/md-radio.html" property="elliptical">
+    <link rel="import" href="components/md/md-morph/md-morph.html" property="elliptical">
+    <link rel="import" href="components/md/md-grid/md-grid.html" property="elliptical">
+    <link rel="import" href="components/db/db-breadcrumb/db-breadcrumb.html" property="elliptical">
+    <link rel="import" href="components/db/db-datepicker/db-datepicker.html" property="elliptical">
+    <link rel="import" href="components/ui/ui-tooltip/ui-tooltip.html" property="elliptical">
+    <link rel="import" href="components/ui/ui-sync/ui-sync.html" property="elliptical">
+    <link rel="import" href="components/ui/ui-form/ui-form.html" property="elliptical">
+    <link rel="import" href="components/paper/paper-confirm/paper-confirm.html">
+    <link rel="import" href="components/custom/md-state-select/md-state-select.html" property="elliptical">
+</head>
+<body fullbleed layout vertical preload>
+<md-preloader></md-preloader>
+<paper-toast></paper-toast><!--app  notification component-->
+<paper-confirm ea="confirm-dialog"><!--app confirmation dialog component-->
+</paper-confirm>
+<md-dialog modal="true" modal-selector="body" header="Select Date Range" action="set" class="md"><!--app dialog-->
+    <db-datepicker service="DatePicker"></db-datepicker><!--dashboard datepicker component-->
+</md-dialog>
+<paper-drawer-panel responsive-width="1024px"><!-- app layout/drawer container-->
+    <paper-header-panel drawer>
+        <md-brand class="md hide-for-medium-down">
+            <span>Revstack.io</span>
+        </md-brand>
+        <img src="/css/img/pattern.png" class="hide-for-desktop"><!--touch material design pattern-->
+        <div data-menu-placeholder><!-- menu placeholder -->
+        </div>
+    </paper-header-panel>
+    <paper-header-panel main class="md">
+        <div data-toolbar-placeholder class="paper-header"><!-- toolbar placeholder-->
+        </div>
+        <div content class="md" content-placeholder><!-- views for Controller actions get loaded here-->
+        </div>
+    </paper-header-panel>
+</paper-drawer-panel>
+<!-- script bundles -->
+<link rel="import" property="scripts" href="bundles/dev-bundle.html"><!-- dev environment bundle only-->
+<link rel="import" property="scripts" href="bundles/bundle.html"><!--loads in elliptical and its dependencies-->
+<link rel="import" property="scripts" href="bundles/app-bundle.html"><!-- loads in the application-->
+</body>
+</html>
