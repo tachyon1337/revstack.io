@@ -30,20 +30,22 @@
         </md-icon-card>
     </flex-box>
     <md-grid-box>
+        <flex-box class="center dashboard-box">
+            <h1>{siteTitle}</h1>
+        </flex-box>
         <md-column width-70>
-            {#displayModel}
+            {#dashboard}
                 {>"shared.dashboard.statistics-graph"  /}
                 {>"shared.dashboard.trends-graph" /}
                 {>"shared.dashboard.realtime-graph" /}
                 {>"shared.dashboard.social-graph" /}
-            {/displayModel}
+            {/dashboard}
         </md-column>
         <md-column width-30>
-            {#displayModel}
+            {#dashboard}
                 {>"shared.dashboard.browser-usage" /}
                 {>"shared.dashboard.device-usage" /}
-            {/displayModel}
-
+            {/dashboard}
         </md-column>
     </md-grid-box>
 </section>

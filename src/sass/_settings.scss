@@ -19,14 +19,15 @@ $gray-light: #d8d8d8;
 //$breakpoint-medium:1024px;
 //$breakpoint-medium-portrait:768px;
 //$breakpoint-large: $breakpoint-medium + 1;
-//$breakpoint-small: 640px;
+//$breakpoint-small: 640px !default;
 //$breakpoint-small-portrait: 415px;
 //$breakpoint-tiny:220px;
-//$breakpoint-x-large:1440px;
-//$enforce-hybrid-display:false;
+$breakpoint-x-large:1400px;
+$enforce-hybrid-display:false;
 //$breakpoint-hybrid-medium: 1280px;
 //$breakpoint-hybrid-medium-height:700px;
 //$breakpoint-tabs: 800px;
+//$grid-column-gutter: 30px;
 
 /// document ----------------------
 //$document-background: $white;

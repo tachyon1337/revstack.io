@@ -19,7 +19,7 @@
 @include component-theme($touch:$theme);
 @include semantic-components();
 @include md-ripple-effect();
-
+@include md-material-depth();
 
 .main{
   color:map-get($Colors,white);
@@ -132,7 +132,6 @@
 /// document -------------------------------------------------
 body{
   background:#eee;
-  //color:#42434d;
   min-height: 100vh;
   height:100vh;
   color:#666;
@@ -230,6 +229,14 @@ span.status{
   margin-bottom:1.5em;
 }
 
+.dashboard-box{
+  position:absolute;
+  width:100%;
+  h1{
+    font-size:120px;
+    color:lighten(#a7a7a5,10%);
+  }
+}
 
 
 section.full-white{

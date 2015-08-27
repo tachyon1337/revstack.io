@@ -9,6 +9,12 @@ elliptical.module=(function (app) {
 
     var container=app.container; //app Dependency Injection container
 
+    //app title
+    app.context.siteTitle='My Dashboard';
+
+    //views root
+    var viewsRoot='/views';
+
     //define the Dashboard Service "interface"
     elliptical.DashboardService=Service.extend({
         "@resource":'DashBoardService',
@@ -170,14 +176,17 @@ elliptical.module=(function (app) {
     /* listen */
     app.listen(true,function(){
         //load in the menu and toolbar into the global layout on page load
-        $.get('/views/shared/md-menu.html',function(data){
+        $.get(viewsRoot + '/shared/md-menu.html',function(data){
             var menuPlaceholder=$('[data-menu-placeholder]');
             menuPlaceholder.html(data);
         });
-        $.get('/views/shared/md-toolbar.html',function(data){
+        $.get(viewsRoot + '/shared/md-toolbar.html',function(data){
             var toolbarPlaceholder=$('[data-toolbar-placeholder]');
             toolbarPlaceholder.html(data);
         });
+        //set site title in title tag
+        $('title').html(app.context.siteTitle);
+
     }); //single page app
 
     return app;

@@ -35,7 +35,7 @@ elliptical.module = (function (app) {
 
         function setUser(p){
             var obj={
-                name: p.firstName + ' ' + p.lastName,
+                name: p.name,
                 link:'/Profile/Logout',
                 label:'Sign Out'
             };

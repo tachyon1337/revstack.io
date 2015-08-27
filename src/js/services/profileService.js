@@ -5,46 +5,48 @@ elliptical.module = (function (app) {
 
     var Profile = Service.extend({
         "@resource": 'Profile',
+        get: function(){
+            var $Cookie=container.getType('$Cookie');
+            return $Cookie.get('profile');
+        },
+
         login: function (params,callback) {
-            var query={};
-            query.filter = {
-                val: { email: params.email, password: params.password},
-                fn: this.$provider.loginPredicate()
-            };
-            this.$provider.get({},query,function(err,data){
-                if(data && data[0]){
+            this.$provider.login(params,function(err,data){
+                if(!err){
                     //success
-                    var profile=data[0];
+                    var profile=data;
                     var Location=container.getType('Location');
                     var $Cookie=container.getType('$Cookie');
                     $Cookie.set('profile',profile);
                     var Event=container.getType('Event');
                     Event.emit('app.login',profile);
                     Location.redirect('/');
+
                 }else{
                     //failure
                     var notify=container.getType('Notify');
-                    notify.show('invalid login');
+                    notify.show('Invalid Login');
                 }
             });
         },
 
-        password:function(params,callback){
-            var self=this;
-            this.$provider.get({id:params.id},function(err,data){
-                data.password=params.password;
-                self.$provider.put(data);
-                var notify=container.getType('Notify');
-                notify.show('password has been updated');
-            });
-        },
-
         logout:function(params,callback){
-            var $Cookie=container.getType('$Cookie');
-            $Cookie.delete('profile');
-            var Event=container.getType('Event');
-            Event.emit('app.logout',null);
-            callback(null,'You have been successfully logged out of your account...');
+            this.$provider.logout(params,function(err,data){
+                if(!err){
+                    var $Cookie=container.getType('$Cookie');
+                    $Cookie.delete('profile');
+                    var Event=container.getType('Event');
+                    Event.emit('app.logout',null);
+                    if(callback){
+                        callback(null,{message:'You have been logged out from your account...'});
+                    }
+                }else{
+                    if(callback){
+                        callback(err,null);
+                    }
+                }
+
+            });
         },
 
         authenticated:function(){

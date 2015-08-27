@@ -9,6 +9,12 @@ elliptical.module=(function (app) {
 
     var container=app.container; //app Dependency Injection container
 
+    //app title
+    app.context.siteTitle='My Dashboard';//
+
+    //views root
+    var viewsRoot='/views';
+
     //define the Dashboard Service "interface"
     elliptical.DashboardService=Service.extend({
         "@resource":'DashBoardService',
@@ -170,14 +176,17 @@ elliptical.module=(function (app) {
     /* listen */
     app.listen(true,function(){
         //load in the menu and toolbar into the global layout on page load
-        $.get('/views/shared/md-menu.html',function(data){
+        $.get(viewsRoot + '/shared/md-menu.html',function(data){
             var menuPlaceholder=$('[data-menu-placeholder]');
             menuPlaceholder.html(data);
         });
-        $.get('/views/shared/md-toolbar.html',function(data){
+        $.get(viewsRoot + '/shared/md-toolbar.html',function(data){
             var toolbarPlaceholder=$('[data-toolbar-placeholder]');
             toolbarPlaceholder.html(data);
         });
+        //set site title in title tag
+        $('title').html(app.context.siteTitle);
+
     }); //single page app
 
     return app;
@@ -565,7 +574,7 @@ elliptical.module = (function (app) {
 
         function setUser(p){
             var obj={
-                name: p.firstName + ' ' + p.lastName,
+                name: p.name,
                 link:'/Profile/Logout',
                 label:'Sign Out'
             };
@@ -990,50 +999,53 @@ elliptical.module = (function (app) {
     return app;
 })(elliptical.module);
 elliptical.module = (function (app) {
-
+    var container=app.container;
     var Controller = new elliptical.Controller(app,'Help');
     Controller('/@action', {
         Index:function(req,res,next){
-            var Try=req.service('Try');
+            var Try=container.getType('Try');
             Try(next,function(){
                 res.render(res.context);
             });
         }
-
     });
-
 
     return app;
 })(elliptical.module);
 
 elliptical.module=(function (app) {
+    var container=app.container;
     var Controller = new elliptical.Controller(app,'Home');
+
     Controller('/@action', {
         Index:function(req,res,next){
-            var Try=req.service('Try');
+            var Try=container.getType('Try');
             Try(next,function(){
-                var Settings=req.service('Settings');
-                var displayModel=Settings.getDisplayModel();
-                res.context.displayModel=displayModel;
+                var Settings=container.getType('Settings');
+                var dashboard;
+                if(app.context.disableDashboard && app.context.disableDashboard !==undefined){
+                    dashboard=null;
+                }else{
+                    dashboard=Settings.getDisplayModel();
+                }
+                res.context.dashboard=dashboard;
                 res.render(res.context);
             });
         }
     });
 
-
     return app;
-
 })(elliptical.module);
 
 elliptical.module = (function (app) {
-
+    var container=app.container;
     var Controller = new elliptical.Controller(app, 'Order');
     Controller('/@action/:id', {
         List: function (req, res, next) {
-            var Try=req.service('Try');
+            var Try=container.getType('Try');
             var PAGE_SIZE=app.GRID_SIZE;
             var serviceLabel="orders";
-            var Order=req.service('Order');
+            var Order=container.getType('Order');
             var order=new Order();
             var page=req.params.id;
             Try(next,function(){
@@ -1053,28 +1065,31 @@ elliptical.module = (function (app) {
                     .orderBy(req.query.$orderBy)
                     .orderByDesc(req.query.$orderByDesc)
                     .get(function(err,result){
-                        res.context.orders=result.data;
-                        res.context.pagination=result.pagination;
-                        res.context.count=result.pagination.count;
-                        res.context.label=serviceLabel;
-                        res.render(res.context);
+                        res.dispatch(err,next,function(){
+                            res.context.orders=result.data;
+                            res.context.pagination=result.pagination;
+                            res.context.count=result.pagination.count;
+                            res.context.label=serviceLabel;
+                            res.render(res.context);
+                        });
                     });
             });
-
         },
 
         Detail:function(req,res,next){
-            var Try=req.service('Try');
+            var Try=container.getType('Try');
             var id=req.params.id;
-            var User=req.service('Order');
-            var Event=req.service('Event');
+            var Order=container.getType('Order');
+            var Event=container.getType('Event');
             Event.emit('route.search.morph',{});
             Try(next,function(){
-                User.get({id:id},function(err,data){
-                    res.context.order=data;
-                    res.context.method='put';
-                    res.context.statusOptions=[{option:'open'},{option:'closed'}];
-                    res.render(res.context);
+                Order.get({id:id},function(err,data){
+                    res.dispatch(err,next,function(){
+                        res.context.order=data;
+                        res.context.method='put';
+                        res.context.statusOptions=[{option:'open'},{option:'closed'}];
+                        res.render(res.context);
+                    });
                 });
             });
         }
@@ -1085,26 +1100,28 @@ elliptical.module = (function (app) {
 
 })(elliptical.module);
 elliptical.module = (function (app) {
-
+    var container=app.container;
     var Controller = new elliptical.Controller(app, 'Profile');
 
     Controller('/@action', {
         Index: function (req, res, next) {
-            var Try = req.service('Try');
+            var Try = container.getType('Try');
             Try(next, function () {
-                var $Cookie=req.service('$Cookie');
+                var $Cookie=container.getType('$Cookie');
                 var profile=$Cookie.get('profile');
-                var Profile=req.service('Profile');
+                var Profile=container.getType('Profile');
                 Profile.get({id:profile.id},function(err,data){
-                    res.context.user=data;
-                    res.context.method='put';
-                    res.render(res.context);
+                    res.dispatch(err,next,function(){
+                        res.context.user=data;
+                        res.context.method='put';
+                        res.render(res.context);
+                    });
                 });
             });
         },
 
         Login: function (req, res, next) {
-            var Try = req.service('Try');
+            var Try = container.getType('Try');
             Try(next, function () {
                 res.context.method='login';
                 res.render(res.context);
@@ -1112,22 +1129,24 @@ elliptical.module = (function (app) {
         },
 
         Logout: function (req, res, next) {
-            var Try = req.service('Try');
+            var Try = container.getType('Try');
             Try(next, function () {
-                var $Cookie=req.service('$Cookie');
+                var $Cookie=container.getType('$Cookie');
                 var profile=$Cookie.get('profile');
-                var Profile=req.service('Profile');
+                var Profile=container.getType('Profile');
                 Profile.logout({id:profile.id},function(err,data){
-                    res.context.message=data;
-                    res.render(res.context);
+                    res.dispatch(err,next,function(){
+                        res.context.message=(err) ? err.message : data.message;
+                        res.render(res.context);
+                    });
                 });
             });
         },
 
         Password: function (req, res, next) {
-            var Try = req.service('Try');
+            var Try = container.getType('Try');
             Try(next, function () {
-                var $Cookie=req.service('$Cookie');
+                var $Cookie=container.getType('$Cookie');
                 res.context.user=$Cookie.get('profile');
                 res.context.method='password';
                 res.render(res.context);
@@ -1173,17 +1192,17 @@ elliptical.module = (function (app) {
  */
 
 elliptical.module = (function (app) {
-
+    var container=app.container;
     var Controller = new elliptical.Controller(app,'Settings');
+
     Controller('/@action', {
         Index:function(req,res,next){
-            var Try=req.service('Try');
+            var Try=container.getType('Try');
             Try(next,function(){
-                var Settings=req.service('Settings');
-                res.context.dashboard=Settings.getDashboard();
+                var Settings=container.getType('Settings');
+                res.context.settings=Settings.getDashboard();
                 res.render(res.context);
             });
-
         }
 
     });
@@ -1192,14 +1211,15 @@ elliptical.module = (function (app) {
 })(elliptical.module);
 elliptical.module = (function (app) {
 
+    var container=app.container;
     var PAGE_SIZE=app.PAGE_SIZE;
 
     var Controller = new elliptical.Controller(app, 'User');
     Controller('/@action/:id', {
         List: function (req, res, next) {
-            var Try=req.service('Try');
+            var Try=container.getType('Try');
             var serviceLabel="users";
-            var User=req.service('User');
+            var User=container.getType('User');
             var user=new User();
             var page=req.params.id;
 
@@ -1218,11 +1238,13 @@ elliptical.module = (function (app) {
                     })
                     .filter(query)
                     .get(function(err,result){
-                        res.context.users=result.data;
-                        res.context.pagination=result.pagination;
-                        res.context.count=result.pagination.count;
-                        res.context.label=serviceLabel;
-                        res.render(res.context);
+                        res.dispatch(err,next,function(){
+                            res.context.users=result.data;
+                            res.context.pagination=result.pagination;
+                            res.context.count=result.pagination.count;
+                            res.context.label=serviceLabel;
+                            res.render(res.context);
+                        });
                     });
             });
 
@@ -1236,11 +1258,13 @@ elliptical.module = (function (app) {
             Event.emit('route.search.morph',{});
             Try(next,function(){
                 User.get({id:id},function(err,data){
-                    res.context.user=data;
-                    res.context.method='put';
-                    res.context.activeHide=(data.active) ? '' : 'hide';
-                    res.context.blockHide=(data.active) ? 'hide' : '';
-                    res.render(res.context);
+                    res.dispatch(err,next,function(){
+                        res.context.user=data;
+                        res.context.method='put';
+                        res.context.activeHide=(data.active) ? '' : 'hide';
+                        res.context.blockHide=(data.active) ? 'hide' : '';
+                        res.render(res.context);
+                    });
                 });
             });
         },
@@ -1261,20 +1285,20 @@ elliptical.module = (function (app) {
 
 })(elliptical.module);
 elliptical.module = (function (app) {
-
+    var container=app.container;
     var Controller = new elliptical.Controller(app, 'UserOrder');
     Controller('/@action/:userid/:page', {
         List: function (req, res, next){
-            var Try=req.service('Try');
+            var Try=container.getType('Try');
             var PAGE_SIZE=app.GRID_SIZE;
             var userId=req.params.userid;
             var page=req.params.page;
-            var User=req.service('User');
-            var Order=req.service('Order');
+            var User=container.getType('User');
+            var Order=container.getType('Order');
             var order=new Order();
             Try(next,function(){
                 var query=order.getFilter(req.params);
-                var Async=req.service('Async');
+                var Async=container.getType('Async');
                 Async([
                     function(callback){
                         User.get({id:userId},function(err,data){callback(err,data)})
@@ -1292,12 +1316,14 @@ elliptical.module = (function (app) {
                             .get({userId:userId},function(err,result){callback(err,result)})
                     }
                 ],function(err,results){
-                    res.context.user=results[0];
-                    res.context.orders=results[1].data;
-                    res.context.pagination=results[1].pagination;
-                    res.context.count=results[1].pagination.count;
-                    res.context.hide=(res.context.count > 0) ? '' : 'hide-important';
-                    res.render(res.context);
+                    res.dispatch(err,next,function(){
+                        res.context.user=results[0];
+                        res.context.orders=results[1].data;
+                        res.context.pagination=results[1].pagination;
+                        res.context.count=results[1].pagination.count;
+                        res.context.hide=(res.context.count > 0) ? '' : 'hide-important';
+                        res.render(res.context);
+                    });
                 });
             });
         }
@@ -1940,36 +1966,30 @@ elliptical.module = (function (app) {
     return app;
 })(elliptical.module);
 elliptical.module = (function (app) {
-    var GenericRepository=elliptical.GenericRepository;
-    var container = app.container;
 
-    function createProfile(){
-        var obj={
-            id:1,
-            email:'demo@misonline.biz',
-            password:'demo',
-            firstName:'Bob',
-            lastName:'Jackson'
+    var container = app.container;
+    var profile={
+        id:1,
+        username:'demo@revstack.io',
+        password:'demo',
+        name:'Admin'
+    };
+
+    function $ProfileProvider(){
+        this.login=function(params,callback){
+            if(params.username===profile.username && params.password===profile.password){
+                callback(null,profile);
+            }else{
+                callback({statusCode:401,message:'Invalid Login'},null);
+            }
         };
-        var model=[];
-        model.push(obj);
-        return model;
+
+        this.logout=function(params,callback){
+            callback(null,true);
+        }
     }
 
-
-    var repo=new GenericRepository(createProfile());
-
-    repo.loginPredicate=function(){
-        return function(obj,val){
-            return (obj.email===val.email && obj.password===val.password);
-        }
-    };
-
-    repo.login=function(username,password){
-
-    };
-
-    container.registerType('$ProfileProvider', repo);
+    container.registerType('$ProfileProvider', new $ProfileProvider());
 
     return app;
 })(elliptical.module);
@@ -2896,46 +2916,48 @@ elliptical.module = (function (app) {
 
     var Profile = Service.extend({
         "@resource": 'Profile',
+        get: function(){
+            var $Cookie=container.getType('$Cookie');
+            return $Cookie.get('profile');
+        },
+
         login: function (params,callback) {
-            var query={};
-            query.filter = {
-                val: { email: params.email, password: params.password},
-                fn: this.$provider.loginPredicate()
-            };
-            this.$provider.get({},query,function(err,data){
-                if(data && data[0]){
+            this.$provider.login(params,function(err,data){
+                if(!err){
                     //success
-                    var profile=data[0];
+                    var profile=data;
                     var Location=container.getType('Location');
                     var $Cookie=container.getType('$Cookie');
                     $Cookie.set('profile',profile);
                     var Event=container.getType('Event');
                     Event.emit('app.login',profile);
                     Location.redirect('/');
+
                 }else{
                     //failure
                     var notify=container.getType('Notify');
-                    notify.show('invalid login');
+                    notify.show('Invalid Login');
                 }
             });
         },
 
-        password:function(params,callback){
-            var self=this;
-            this.$provider.get({id:params.id},function(err,data){
-                data.password=params.password;
-                self.$provider.put(data);
-                var notify=container.getType('Notify');
-                notify.show('password has been updated');
-            });
-        },
-
         logout:function(params,callback){
-            var $Cookie=container.getType('$Cookie');
-            $Cookie.delete('profile');
-            var Event=container.getType('Event');
-            Event.emit('app.logout',null);
-            callback(null,'You have been successfully logged out of your account...');
+            this.$provider.logout(params,function(err,data){
+                if(!err){
+                    var $Cookie=container.getType('$Cookie');
+                    $Cookie.delete('profile');
+                    var Event=container.getType('Event');
+                    Event.emit('app.logout',null);
+                    if(callback){
+                        callback(null,{message:'You have been logged out from your account...'});
+                    }
+                }else{
+                    if(callback){
+                        callback(err,null);
+                    }
+                }
+
+            });
         },
 
         authenticated:function(){

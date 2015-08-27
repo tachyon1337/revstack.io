@@ -1,13 +1,14 @@
 elliptical.module = (function (app) {
 
+    var container=app.container;
     var PAGE_SIZE=app.PAGE_SIZE;
 
     var Controller = new elliptical.Controller(app, 'User');
     Controller('/@action/:id', {
         List: function (req, res, next) {
-            var Try=req.service('Try');
+            var Try=container.getType('Try');
             var serviceLabel="users";
-            var User=req.service('User');
+            var User=container.getType('User');
             var user=new User();
             var page=req.params.id;
 
@@ -26,11 +27,13 @@ elliptical.module = (function (app) {
                     })
                     .filter(query)
                     .get(function(err,result){
-                        res.context.users=result.data;
-                        res.context.pagination=result.pagination;
-                        res.context.count=result.pagination.count;
-                        res.context.label=serviceLabel;
-                        res.render(res.context);
+                        res.dispatch(err,next,function(){
+                            res.context.users=result.data;
+                            res.context.pagination=result.pagination;
+                            res.context.count=result.pagination.count;
+                            res.context.label=serviceLabel;
+                            res.render(res.context);
+                        });
                     });
             });
 
@@ -44,11 +47,13 @@ elliptical.module = (function (app) {
             Event.emit('route.search.morph',{});
             Try(next,function(){
                 User.get({id:id},function(err,data){
-                    res.context.user=data;
-                    res.context.method='put';
-                    res.context.activeHide=(data.active) ? '' : 'hide';
-                    res.context.blockHide=(data.active) ? 'hide' : '';
-                    res.render(res.context);
+                    res.dispatch(err,next,function(){
+                        res.context.user=data;
+                        res.context.method='put';
+                        res.context.activeHide=(data.active) ? '' : 'hide';
+                        res.context.blockHide=(data.active) ? 'hide' : '';
+                        res.render(res.context);
+                    });
                 });
             });
         },
