@@ -9,13 +9,13 @@
             <flex-box>
                 <a href="/Order/List/1">
                     <span class="icon-cached refresh ui-tooltip" data-title="Refresh" data-css="grey"
-                          ea="tooltip"></span>
+                          ea-bind="tooltip"></span>
                 </a>
               {#pagination}
                   <div class="labels">
                       <span>{beginRecord}-{endRecord}</span>
                       <span>of</span>
-                      <span class="accent" data-id="to-label" ea="to-label">{count}</span>
+                      <span class="accent" data-id="to-label" ea-bind="to-label">{count}</span>
                       <span class="accent">{label}</span>
                   </div>
               {/pagination}
@@ -32,7 +32,7 @@
             </md-button-group>
         </main-panel>
     </md-bar>
-    <md-layout ea="order-grid">
+    <md-layout ea-bind="order-grid">
         <side-panel class="border-right">
             <nav-list>
                 <menu-item>

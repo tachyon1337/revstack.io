@@ -600,7 +600,7 @@ elliptical.module = (function (app) {
  elliptical.binding binds a closure to any mutated element(i.e,  elements added to the DOM) that has an "ea" attribute.
  The binding passes a reference to the HTML node to the closure
 
- <html-tag ea="my-binding"></html-tag>
+ <html-tag ea-bind="my-binding"></html-tag>
 
  elliptical.binding("my-binding",function(node){
          ///the callback instance

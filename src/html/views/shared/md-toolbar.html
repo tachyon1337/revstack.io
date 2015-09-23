@@ -2,11 +2,11 @@
     <flex-box class="show-for-medium-down">
         <span class="icon-menu" paper-drawer-toggle></span>
     </flex-box>
-    <md-morph service="SearchMorphService" ea="search">
+    <md-morph service="SearchMorphService" ea-bind="search">
         <md-input-icon-button placeholder="Search..." md-name="search" md-id="search" icon="search" class="search-box" show></md-input-icon-button>
         <span class="icon-arrow-back back-arrow" toggle data-role="back"></span>
     </md-morph>
-    <flex-box class="icons" ea="profile">
+    <flex-box class="icons" ea-bind="profile">
      <a href="/Settings" data-settings>
          <span class="icon-settings relative"></span>
      </a>

@@ -3,19 +3,19 @@
     <md-bar>
         <side-panel>
             <a href="/User/Create/New">
-                <span class="icon-person-add main icon ui-tooltip" data-title="New User" data-css="main-tooltip" ea="tooltip"></span>
+                <span class="icon-person-add main icon ui-tooltip" data-title="New User" data-css="main-tooltip" ea-bind="tooltip"></span>
             </a>
         </side-panel>
         <main-panel>
             <flex-box>
                 <a href="/User/List/1">
-                    <span class="icon-cached refresh ui-tooltip" data-title="Refresh" data-css="grey" ea="tooltip"></span>
+                    <span class="icon-cached refresh ui-tooltip" data-title="Refresh" data-css="grey" ea-bind="tooltip"></span>
                 </a>
                 {#pagination}
                     <div class="labels">
                         <span>{beginRecord}-{endRecord}</span>
                         <span>of</span>
-                        <span class="accent" data-id="to-label" ea="to-label">{count}</span>
+                        <span class="accent" data-id="to-label" ea-bind="to-label">{count}</span>
                         <span class="accent">{label}</span>
                     </div>
                 {/pagination}
@@ -32,7 +32,7 @@
             </md-button-group>
         </main-panel>
     </md-bar>
-    <md-layout ea="user-list">
+    <md-layout ea-bind="user-list">
         <side-panel>
             <nav-list>
                 <menu-item>

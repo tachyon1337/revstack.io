@@ -4,7 +4,7 @@
         <h5 class="primary icon medium">Dashboard</h5>
         <br>
         <br>
-        <flex-box class="column" ea="dashboard-settings">
+        <flex-box class="column" ea-bind="dashboard-settings">
             {#settings}
                 <label>{name}</label>
                 <md-switch class="padding-bottom" md-id="{key}" checked="{@checked value="{active}"  /}" {disableDashboard}></md-switch>

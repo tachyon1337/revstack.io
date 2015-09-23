@@ -6,12 +6,12 @@
 <link rel="import" href="components/custom/dashboard-carousel/dashboard-carousel.html" property="elliptical">
 
 <section class="content stretch">
-    <paper-fab icon="add" class="md fab" ea="fab" fab-type="dashboard"></paper-fab>
+    <paper-fab icon="add" class="md fab" ea-bind="fab" fab-type="dashboard"></paper-fab>
     <db-breadcrumb icon="event">
         <h4 class="db-header">Dashboard</h4>
         <span class="date" data-id="date-range"></span>
     </db-breadcrumb>
-    <flex-box class="space-between flex-cards" ea="cards">
+    <flex-box class="space-between flex-cards" ea-bind="cards">
         <md-icon-card icon="group" class="users">
             <h2 data-id="users"></h2>
             <span>New Users</span>

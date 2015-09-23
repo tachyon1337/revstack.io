@@ -52,7 +52,7 @@
 <body fullbleed layout vertical preload>
 <md-preloader></md-preloader>
 <paper-toast></paper-toast><!--app  notification component-->
-<paper-confirm ea="confirm-dialog"><!--app confirmation dialog component-->
+<paper-confirm ea-bind="confirm-dialog"><!--app confirmation dialog component-->
 </paper-confirm>
 <md-dialog modal="true" modal-selector="body" header="Select Date Range" action="set" class="md"><!--app dialog-->
     <db-datepicker service="DatePicker"></db-datepicker><!--dashboard datepicker component-->
