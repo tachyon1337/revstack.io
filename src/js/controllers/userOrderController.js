@@ -11,7 +11,7 @@ elliptical.module = (function (app) {
             var Order=container.getType('Order');
             var order=new Order();
             Try(next,function(){
-                var query=order.getFilter(req.params);
+                var query={userId:req.params.userid};
                 var Async=container.getType('Async');
                 Async([
                     function(callback){

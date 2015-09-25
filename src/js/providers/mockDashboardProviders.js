@@ -32,6 +32,10 @@ elliptical.module = (function (app) {
     }
 
     var $statsRepo=new GenericRepository(trafficModel);
+    $statsRepo.query=function(filter){
+        return this.dateRange(filter);
+    };
+
     container.registerType('$StatisticsGraphProvider',$statsRepo);
 
     /////////////Browser Usage

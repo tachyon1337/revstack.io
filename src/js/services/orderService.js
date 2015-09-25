@@ -1,38 +1,9 @@
 elliptical.module = (function (app) {
-    var ReportService = elliptical.ReportService;
+    var Service = elliptical.Service;
     var container=app.container;
 
-    var Order = ReportService.extend({
+    var Order = Service.extend({
         "@resource": 'Order',
-
-        getFilter:function(params){
-            if(params.$filter && params.$filter !==undefined){
-                var filter=params.$filter;
-                var isDate=(filter.indexOf('Date') > -1);
-                if(isDate){
-                    var datePicker=container.getType('DatePicker');
-                    var dateValue=datePicker.getDate();
-
-                    return {
-                        val:dateValue,
-                        fn:this.$provider.dateRangePredicate(dateValue)
-                    };
-                }else{
-                    return {
-                        val:params.$filter,
-                        fn:this.$provider.startsWithPredicate()
-                    };
-                }
-
-            }else if(params.userid){
-                return{
-                    val:params.userid,
-                    fn:this.$provider.findPredicate('userid')
-                }
-            }else{
-                return null;
-            }
-        },
 
         getLabel:function(filter){
             var isDate=(filter.indexOf('Date') > -1);

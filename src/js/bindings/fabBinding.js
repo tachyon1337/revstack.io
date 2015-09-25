@@ -17,7 +17,10 @@ elliptical.module = (function (app) {
 
         function forOrders(){
             var datePicker=$('db-datepicker');
-            datePicker.dbDatepicker('clear');
+            setTimeout(function(){
+                datePicker.dbDatepicker('clear');
+            },1000);
+
 
         }
     });

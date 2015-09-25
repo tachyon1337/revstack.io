@@ -13,9 +13,12 @@ elliptical.module = (function (app) {
             var page=req.params.id;
 
             Try(next,function(){
-                var query=user.getFilter(req.query);
-                if(query){
-                    var decoded=decodeURIComponent(req.query.$filter);
+                //var query=user.getFilter(req.query);
+                var keys = Object.keys( req.query );
+                var query;
+                if(keys[0]){
+                    query=req.query[keys[0]];
+                    var decoded=decodeURIComponent(query);
                     serviceLabel += ' match "' + decoded + '"';
                 }
                 user

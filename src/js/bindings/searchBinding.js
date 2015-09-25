@@ -17,7 +17,7 @@ elliptical.module = (function (app) {
             var url=_getUrl();
             if(val !==''){
                 input.val('');
-                search.find(url,val);
+                search.find({url:url,value:val});
             }
         }
 

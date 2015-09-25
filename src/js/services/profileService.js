@@ -2,7 +2,6 @@ elliptical.module = (function (app) {
     var Service = elliptical.Service;
 
     var container = app.container;
-
     var Profile = Service.extend({
         "@resource": 'Profile',
         get: function(){
@@ -11,6 +10,7 @@ elliptical.module = (function (app) {
         },
 
         login: function (params,callback) {
+
             this.$provider.login(params,function(err,data){
                 if(!err){
                     //success

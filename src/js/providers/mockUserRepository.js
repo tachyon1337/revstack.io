@@ -38,23 +38,18 @@ elliptical.module = (function (app) {
     //--------------end-------------------------------------------
 
     var model=generateModel(500);
-    var repo=new GenericRepository(model,['firstName','lastName','city']);
+    var repo=new GenericRepository(model);
 
     //overload the repo
     repo.resetPassword=function(params,callback){
         callback(null,params);
     };
 
-    repo.getFilter=function(params){
-        if(params.$filter && params.$filter !==undefined){
-            var startsWith=this.startsWithPredicate();
-            return {
-                val:params.$filter,
-                fn:startsWith
-            };
-        }else{
-            return null;
-        }
+    repo.query=function(filter){
+        filter=filter.toLowerCase();
+        return this.Enumerable().Where(function(x){
+            return ((x.firstName.toLowerCase().indexOf(filter)==0) || (x.lastName.toLowerCase().indexOf(filter)==0) || (x.city.toLowerCase().indexOf(filter)==0));
+        }).ToArray();
     };
 
     container.registerType('$UserRepository', repo);

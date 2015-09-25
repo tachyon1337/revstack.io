@@ -8,6 +8,13 @@
   }
 }
 
+@include media-breakpoint(1500px){
+  md-icon-card{
+    width:48%;
+  }
+}
+
+
 @include media-breakpoint(1400px){
   md-grid{
     font-size:14px;

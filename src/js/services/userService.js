@@ -1,9 +1,9 @@
 
 elliptical.module = (function (app) {
-    var ReportService = elliptical.ReportService;
+    var Service = elliptical.Service;
     var container=app.container;
 
-    var User = ReportService.extend({
+    var User = Service.extend({
         "@resource": 'User',
         resetPassword:function(params,callback){return this.$provider.resetPassword(params,callback)},
         sum:function(dateValue,callback){return this.$provider.sum({dateValue:dateValue,dateProp:'dateRegistered'},callback)}

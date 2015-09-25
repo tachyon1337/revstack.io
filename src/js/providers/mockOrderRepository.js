@@ -126,6 +126,43 @@ elliptical.module = (function (app) {
     //create the mock repository
     var repo=new GenericRepository(model,callback);
 
+    repo.query=function(filter){
+        var List=this.Enumerable();
+        if(typeof filter==='string'){
+            filter=filter.toLowerCase();
+            return _filter(List,filter);
+        }else{
+            var userId=filter.userId;
+            return _filterByUserId(List,userId);
+        }
+
+        function _filter(List,filter){
+            return List.Where(function(x){
+                var firstName=(x.billingAddress) ? x.billingAddress.firstName : x.firstName;
+                firstName=firstName.toLowerCase();
+                var lastName=(x.billingAddress) ? x.billingAddress.lastName : x.lastName;
+                lastName=lastName.toLowerCase();
+                var city=(x.billingAddress) ? x.billingAddress.city : x.city;
+                city=city.toLowerCase();
+                var result=((firstName.indexOf(filter)===0) || (lastName.indexOf(filter)===0) || (city.indexOf(filter)===0));
+                if(result){
+                    return true;
+                }else{
+                    var words=filter.split(' ');
+                    if(words.length < 2){
+                        return false;
+                    }
+                    return (firstName.indexOf(words[0])===0 && lastName.indexOf(words[1])===0)
+                }
+
+            }).ToArray();
+        }
+
+        function _filterByUserId(List,userId){
+            return List.Where("$.userId == '" + userId + "'").ToArray();
+        }
+    };
+
 
     container.registerType('$OrderRepository', repo);
 

@@ -21,7 +21,6 @@
     "sass-paper-components": "git+https://github.com/tachyon1337/sass-paper-components.git"
    },
   "devDependencies": {
-    "elliptical-gulp": "git+https://github.com/tachyon1337/elliptical-gulp.git",
     "gulp": "^3.8.7",
     "gulp-util": "^2.2.14",
     "gulp-concat": "^2.2.0",

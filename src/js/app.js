@@ -6,140 +6,31 @@ elliptical.module=(function (app) {
     var Location = elliptical.Router.Location;
     var Event=elliptical.Event;
     var $Cookie=elliptical.providers.$Cookie;
+    var Sort = elliptical.Sort;
+    var $Sort = elliptical.providers.$Sort;
 
     var container=app.container; //app Dependency Injection container
 
     //app title
-    app.context.siteTitle='My Dashboard';
+    app.context.siteTitle='My Dashboard';//
+    app.context.displayTitle='hide';///==='hide', to hide
+
+    //disable dashboard widgets && floating action button(fab)
+    app.context.disableDashboard=''; ///=='disabled', to disable
+    app.context.fabHide=''; ///=='hide', to hide
 
     //views root
     var viewsRoot='/views';
+    //var $Template = elliptical.providers.$Template; ///template provider
+    //$Template.setRoot(viewsRoot);  ///set views root
 
-    //define the Dashboard Service "interface"
-    elliptical.DashboardService=Service.extend({
-        "@resource":'DashBoardService',
-        element:null,
-        show:function(element){this.$provider.show(element)},
-        hide:function(key){
-            var Settings=container.getType('Settings');
-            var component=Settings.getDashboard(key);
-            component.active=false;
-            Settings.setDashboard(key,component);
-        },
-        refresh:function(element){this.$provider.refresh(element)},
-        setElement:function(element) {this.element=element},
-        onAfterGet:function(element,scope) {this.$provider.onAfterGet(element,scope)},
-        action:function(element,params) {this.$provider.action(element,params)}
-    },{
-        element:null,
-        show:function(element){this.constructor.show(element)},
-        hide:function(key){this.constructor.hide(key)},
-        refresh:function(element){this.constructor.refresh(element)},
-        setElement:function(element){this.element=element},
-        onAfterGet:function(element,scope){this.constructor.onAfterGet(element,scope)},
-        action:function(element,params) {this.constructor.action(element,params)}
-
-    });
-
-    //extend service class for reporting
-    elliptical.ReportService=Service.extend({
-        getFilter:function(params){return this.$provider.getFilter(params)},
-        sum:function(dateValue,prop,type,callback){this.$provider.sum(dateValue,prop,type,callback)}
-    },{
-        getFilter:function(params){return this.constructor.getFilter(params)},
-        sum:function(dateValue,prop,type,callback){this.constructor.sum(dateValue,prop,type,callback)}
-    });
-
-    //extend the generic repository for common predicates
-    var GenericRepository=elliptical.GenericRepository;
-
-    GenericRepository.prototype.dateRangePredicate=function(param,prop){
-        if(prop===undefined){
-            prop='date';
-        }
-        if(param.start && param.end){
-            return function(obj,val){
-                var dte=moment(obj[prop]);
-                return (dte >=val.start && dte <=val.end);
-            }
-        }else{
-            return function(obj,val){
-                var dte=moment(obj[prop]);
-                return (dte >=val);
-            }
-        }
-    };
-    GenericRepository.prototype.startsWithPredicate=function(){
-        return function(obj,val){
-            if(!val || val==='' || val===undefined){
-                return false;
-            }
-
-            val=decodeURIComponent(val);
-            var firstName=(obj.billingAddress) ? obj.billingAddress.firstName : obj.firstName;
-            firstName=firstName.toLowerCase();
-            var lastName=(obj.billingAddress) ? obj.billingAddress.lastName : obj.lastName;
-            lastName=lastName.toLowerCase();
-            var city=(obj.billingAddress) ? obj.billingAddress.city : obj.city;
-            city=city.toLowerCase();
-            val=val.toLowerCase();
-            var result=((firstName.indexOf(val)===0) || (lastName.indexOf(val)===0) || (city.indexOf(val)===0));
-            if(result){
-                return true;
-            }else{
-                var words=val.split(' ');
-                if(words.length < 2){
-                    return false;
-                }
-                return (firstName.indexOf(words[0])===0 && lastName.indexOf(words[1])===0)
-            }
-        }
-    };
-    GenericRepository.prototype.findPredicate=function(prop){
-        return function(obj,val){
-            if(!val || val==='' || val===undefined){
-                return false;
-            }
-            return (obj[prop]===val);
-        };
-    };
-
-    GenericRepository.prototype.sum=function(params,callback){
-        var dateValue=params.dateValue;
-        var prop=params.prop || null;
-        var dateProp=params.dateProp || 'date';
-        var type=params.type || null;
-        var query={};
-        query.filter={
-            val:dateValue,
-            fn:this.dateRangePredicate(dateValue,dateProp)
-        };
-        this.get({},null,query,function(err,result){
-            if(result && result.length && result.length >0){
-                if(!prop || prop===undefined){
-                    callback(null,result.length);
-                }else{
-                    var sum=0;
-                    var length=result.length;
-                    for(var i=0;i<length;i++){
-                        sum+=(type==='float') ? parseFloat(result[i][prop]) : parseInt(result[i][prop]);
-                    }
-                    return callback(null,sum);
-                }
-            }else{
-                return callback(null,0);
-            }
-        });
-    };
-
-    //register Location,Event $Cookie with the container
-    //container.registerType({string} name <optional>,{object} service <required>,{object} provider <optional>)
+    //registrations
     container.registerType('Location',Location);
     container.registerType('Event',Event);
     container.registerType('$Cookie',$Cookie);
+    container.mapType(Sort, $Sort);
 
     //inject the app container to implement the web component service locator
-    //$.element.serviceLocator({function} fn <required>, {object} container <required>)
     $.element.serviceLocator(container.getType,container);
 
 

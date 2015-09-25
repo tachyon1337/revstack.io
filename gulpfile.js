@@ -3,13 +3,14 @@
 var gulp=require('gulp'),
     http = require('http'),
     ecstatic = require('elliptical-ecstatic'),
-    tasks=require('elliptical-gulp'),
+    concat=require('gulp-concat'),
     sass = require('gulp-sass'),
     liveServer = require("live-server"),
     watch=require('gulp-watch'),
     fs = require('fs-extra'),
-    config=require('./config.json');
-
+    config=require('./config.json'),
+    scssSrc='./sass/**/*.scss',
+    jsSrc='./app/**/*.js';
 
 //////// public tasks //////////////////////////////////////
 gulp.task('default',function(){
@@ -37,15 +38,15 @@ gulp.task('start',function(){
         path:path
     });
 
-    tasks.scripts({
-        src:config.src,
-        dest:config.dest,
-        destFile:config.destFile
+
+    watch(jsSrc,function(files){
+        compileApp();
+        console.log('js file changed');
     });
 
-    var src='./sass/**/*.scss';
-    watch(src,function(files){
+    watch(scssSrc,function(files){
         compileSass();
+        console.log('sass file changed');
     });
 });
 
@@ -59,22 +60,21 @@ gulp.task('start-live',function(){
         host:config.liveHost
     });
 
-    tasks.scripts({
-        src:config.src,
-        dest:config.dest,
-        destFile:config.destFile
+    watch(jsSrc,function(files){
+        compileApp();
+        console.log('js file changed');
     });
 
-    var src='./sass/**/*.scss';
-    watch(src,function(files){
+    watch(scssSrc,function(files){
         compileSass();
+        console.log('sass file changed');
     });
 
 });
 
 ///--sass--///
 gulp.task('sass', function () {
-    compileSass(config.path);
+    compileSass();
 });
 
 ///---sass watch---///
@@ -82,10 +82,11 @@ gulp.task('sass-watch', function () {
     var src = './sass/**/*.scss';
     watch(src, function (files) {
         compileSass();
+        console.log('sass file changed');
     });
 });
 
-
+///-- build --- //
 gulp.task('build', function () {
     copyScripts();
 });
@@ -93,10 +94,18 @@ gulp.task('build', function () {
 
 
 /////// private methods ////////////////////////////
-function testInit(){
 
+///compile app///
+function compileApp(){
+    gulp.src(['./app/middleware/**/*.js','./app/app.js','./app/providers/**/*.js','./app/services/**/*.js',
+        './app/modules/**/*.js','./app/controllers/**/*.js','./app/bindings/**/*.js'])
+        .pipe(concat('app.js'))
+        .pipe(gulp.dest('./public/scripts'));
 }
 
+
+
+///build///
 function copyTasks(){
     copyAppJsFiles();
     copyAppSassFiles();

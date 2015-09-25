@@ -14,7 +14,7 @@ elliptical.module = (function (app) {
         menuService.show(path);
 
         function onUrl404(event,data){
-            console.log(data);
+
         }
 
     });

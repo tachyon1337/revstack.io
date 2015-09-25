@@ -6,7 +6,7 @@
 <link rel="import" href="components/custom/dashboard-carousel/dashboard-carousel.html" property="elliptical">
 
 <section class="content stretch">
-    <paper-fab icon="add" class="md fab" ea-bind="fab" fab-type="dashboard"></paper-fab>
+    <paper-fab icon="add" class="md fab {fabHide}" ea-bind="fab" fab-type="dashboard"></paper-fab>
     <db-breadcrumb icon="event">
         <h4 class="db-header">Dashboard</h4>
         <span class="date" data-id="date-range"></span>
@@ -31,7 +31,7 @@
     </flex-box>
     <md-grid-box>
         <flex-box class="center dashboard-box">
-            <h1>{siteTitle}</h1>
+            <h1 class="{displayTitle}">{siteTitle}</h1>
         </flex-box>
         <md-column width-70>
             {#dashboard}

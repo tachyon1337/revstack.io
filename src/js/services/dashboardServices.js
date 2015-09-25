@@ -1,6 +1,30 @@
 elliptical.module = (function (app) {
     var container=app.container;
-    var DashboardService=elliptical.DashboardService;
+    //define the Dashboard Service "interface"
+    var DashboardService=elliptical.Service.extend({
+        "@resource":'DashBoardService',
+        element:null,
+        show:function(element){this.$provider.show(element)},
+        hide:function(key){
+            var Settings=container.getType('Settings');
+            var component=Settings.getDashboard(key);
+            component.active=false;
+            Settings.setDashboard(key,component);
+        },
+        refresh:function(element){this.$provider.refresh(element)},
+        setElement:function(element) {this.element=element},
+        onAfterGet:function(element,scope) {this.$provider.onAfterGet(element,scope)},
+        action:function(element,params) {this.$provider.action(element,params)}
+    },{
+        element:null,
+        show:function(element){this.constructor.show(element)},
+        hide:function(key){this.constructor.hide(key)},
+        refresh:function(element){this.constructor.refresh(element)},
+        setElement:function(element){this.element=element},
+        onAfterGet:function(element,scope){this.constructor.onAfterGet(element,scope)},
+        action:function(element,params) {this.constructor.action(element,params)}
+
+    });
 
     //// Statistics Graph Service
     var StatisticsGraph=DashboardService.extend({
@@ -11,14 +35,12 @@ elliptical.module = (function (app) {
             var dateValue=datePicker.getDate();
             var type=datePicker.getType();
             var query={};
-            query.filter={
-                val:dateValue,
-                fn:this.$provider.dateRangePredicate(dateValue)
-            };
+            query.filter=dateValue;
             var viewModel=this._initViewModel();
             this.$provider.get({},query,function(err,data){
 
                 //need to format the data to the chart view model
+                data=data.ToArray();
                 switch(type){
                     case 'today':
                         viewModel.data.labels.push('today');
@@ -254,11 +276,9 @@ elliptical.module = (function (app) {
         //icon cards
         sum:function(dateValue,callback){
             var query={};
-            query.filter={
-                val:dateValue,
-                fn:this.$provider.dateRangePredicate(dateValue)
-            };
+            query.filter=dateValue;
             this.$provider.get({},query,function(err,data){
+                data=data.ToArray();
                 var sum=0;
                 var length=data.length;
                 for(var i=0;i<length;i++){

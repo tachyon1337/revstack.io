@@ -10,9 +10,10 @@ elliptical.module = (function (app) {
             var order=new Order();
             var page=req.params.id;
             Try(next,function(){
-                var query=order.getFilter(req.query);
+                //var query=order.getFilter(req.query);
+                var query=req.query.$filter;
                 if(query){
-                    var decodedQuery=decodeURIComponent(req.query.$filter);
+                    var decodedQuery=decodeURIComponent(query);
                     serviceLabel+=' match "' + order.getLabel(decodedQuery) + '"';
                 }
                 order

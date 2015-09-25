@@ -1,5 +1,5 @@
 <section class="full-white">
-    <paper-fab icon="add" class="md fab" ea-bind="fab" fab-type="orders"></paper-fab>
+    <paper-fab icon="add" class="md fab {fabHide}" ea-bind="fab" fab-type="orders"></paper-fab>
     <md-bar>
         <side-panel>
             <span class="icon-shop-two main icon ui-tooltip" data-title="Orders" data-css="indigo"
@@ -49,7 +49,7 @@
             </nav-list>
         </side-panel>
         <main-panel class="padding">
-            <md-grid class="orders-grid" service="Search" refresh="/Order/List/1" breakpoint="900">
+            <md-grid class="orders-grid" service="Sort" refresh="/Order/List/1" breakpoint="900">
                 <header>
                     <column-header empty></column-header>
                     <column-header field="date" sort="true">Order Date</column-header>
