@@ -126,14 +126,17 @@ elliptical.module = (function (app) {
     //create the mock repository
     var repo=new GenericRepository(model,callback);
 
-    repo.query=function(filter){
+    repo.query=function(filter,asEnumerable){
         var List=this.Enumerable();
+        var result;
         if(typeof filter==='string'){
             filter=filter.toLowerCase();
-            return _filter(List,filter);
+            result=_filter(List,filter);
+            return (asEnumerable) ? result : result.ToArray();
         }else{
             var userId=filter.userId;
-            return _filterByUserId(List,userId);
+            result=_filterByUserId(List,userId);
+            return (asEnumerable) ? result : result.ToArray();
         }
 
         function _filter(List,filter){
@@ -155,11 +158,11 @@ elliptical.module = (function (app) {
                     return (firstName.indexOf(words[0])===0 && lastName.indexOf(words[1])===0)
                 }
 
-            }).ToArray();
+            });
         }
 
         function _filterByUserId(List,userId){
-            return List.Where("$.userId == '" + userId + "'").ToArray();
+            return List.Where("$.userId == '" + userId + "'");
         }
     };
 

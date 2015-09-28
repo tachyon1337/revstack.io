@@ -13,7 +13,6 @@ elliptical.module = (function (app) {
             var page=req.params.id;
 
             Try(next,function(){
-                //var query=user.getFilter(req.query);
                 var keys = Object.keys( req.query );
                 var query;
                 if(keys[0]){
@@ -44,9 +43,9 @@ elliptical.module = (function (app) {
 
         Detail:function(req,res,next){
             var id=req.params.id;
-            var User=req.service('User');
-            var Event=req.service('Event');
-            var Try=req.service('Try');
+            var User=container.getType('User');
+            var Event=container.getType('Event');
+            var Try=container.getType('Try');
             Event.emit('route.search.morph',{});
             Try(next,function(){
                 User.get({id:id},function(err,data){
@@ -62,9 +61,9 @@ elliptical.module = (function (app) {
         },
 
         Create:function(req,res,next){
-            var User=req.service('User');
-            var Event=req.service('Event');
-            var Try=req.service('Try');
+            var User=container.getType('User');
+            var Event=container.getType('Event');
+            var Try=container.getType('Try');
             Event.emit('route.search.morph',{});
             Try(next,function(){
                 res.context.user={};

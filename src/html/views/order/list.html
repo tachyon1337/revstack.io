@@ -32,7 +32,7 @@
             </md-button-group>
         </main-panel>
     </md-bar>
-    <md-layout ea-bind="order-grid">
+    <md-layout ea-bind="list" service="Order" label="Order" item-selector="grid-item" detail-action="/Order/Detail/[id]">
         <side-panel class="border-right">
             <nav-list>
                 <menu-item>
@@ -64,7 +64,7 @@
                         <grid-item data-id="{id}">
                             <md-checkbox md-id="cb{$idx}" data-id="{id}"></md-checkbox>
                         </grid-item>
-                        <grid-item data-id="{id}">{date}</grid-item>
+                        <grid-item data-id="{id}"><a href="/Order/Detail/{id}" class="indigo">{date}</a></grid-item>
                         {#billingAddress}
                             <grid-item data-id="{id}">{firstName} {lastName}</grid-item>
                         {/billingAddress}

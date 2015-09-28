@@ -32,7 +32,7 @@
             </md-button-group>
         </main-panel>
     </md-bar>
-    <md-layout ea-bind="user-list">
+    <md-layout ea-bind="list" service="User" label="User" item-selector="li" detail-action="/User/Detail/[id]">
         <side-panel>
             <nav-list>
                 <menu-item>
@@ -70,14 +70,6 @@
                                 </p>
                             </flex-box>
                         </flex-box>
-
-                        {@gt key=orderNumber value=0}
-                            <a class="md-icon-badge purple-badge" href="/UserOrder/List/{id}/1">
-                                <span class="md-badge">{orderNumber}</span>
-                                <span class="icon-shop"></span>
-                            </a>
-                        {/gt}
-
                         <a class="small-grey user-date">{dateRegistered}</a>
                     </li>
                 {/users}

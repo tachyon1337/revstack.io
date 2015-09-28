@@ -45,11 +45,12 @@ elliptical.module = (function (app) {
         callback(null,params);
     };
 
-    repo.query=function(filter){
+    repo.query=function(filter,asEnumerable){
         filter=filter.toLowerCase();
-        return this.Enumerable().Where(function(x){
+        var result=this.Enumerable().Where(function(x){
             return ((x.firstName.toLowerCase().indexOf(filter)==0) || (x.lastName.toLowerCase().indexOf(filter)==0) || (x.city.toLowerCase().indexOf(filter)==0));
-        }).ToArray();
+        });
+        return (asEnumerable) ? result : result.ToArray();
     };
 
     container.registerType('$UserRepository', repo);
