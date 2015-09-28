@@ -701,14 +701,17 @@ elliptical.module = (function (app) {
     //create the mock repository
     var repo=new GenericRepository(model,callback);
 
-    repo.query=function(filter){
+    repo.query=function(filter,asEnumerable){
         var List=this.Enumerable();
+        var result;
         if(typeof filter==='string'){
             filter=filter.toLowerCase();
-            return _filter(List,filter);
+            result=_filter(List,filter);
+            return (asEnumerable) ? result : result.ToArray();
         }else{
             var userId=filter.userId;
-            return _filterByUserId(List,userId);
+            result=_filterByUserId(List,userId);
+            return (asEnumerable) ? result : result.ToArray();
         }
 
         function _filter(List,filter){
@@ -730,11 +733,11 @@ elliptical.module = (function (app) {
                     return (firstName.indexOf(words[0])===0 && lastName.indexOf(words[1])===0)
                 }
 
-            }).ToArray();
+            });
         }
 
         function _filterByUserId(List,userId){
-            return List.Where("$.userId == '" + userId + "'").ToArray();
+            return List.Where("$.userId == '" + userId + "'");
         }
     };
 
@@ -790,11 +793,12 @@ elliptical.module = (function (app) {
         callback(null,params);
     };
 
-    repo.query=function(filter){
+    repo.query=function(filter,asEnumerable){
         filter=filter.toLowerCase();
-        return this.Enumerable().Where(function(x){
+        var result=this.Enumerable().Where(function(x){
             return ((x.firstName.toLowerCase().indexOf(filter)==0) || (x.lastName.toLowerCase().indexOf(filter)==0) || (x.city.toLowerCase().indexOf(filter)==0));
-        }).ToArray();
+        });
+        return (asEnumerable) ? result : result.ToArray();
     };
 
     container.registerType('$UserRepository', repo);
@@ -1122,6 +1126,61 @@ elliptical.module = (function (app) {
     }
 
     container.registerType('$NotifyProvider', new ToastProvider());
+
+    return app;
+})(elliptical.module);
+elliptical.module = (function (app) {
+    var Service = elliptical.Service;
+    var container = app.container;
+    var $Navigation=elliptical.providers.$Navigation;
+    var Location=container.getType('Location');
+
+    var DetailNavigationService = Service.extend({
+        "@resource": null,
+        $navigationProvider:null,
+        nav:null,
+
+        navigation:function(params,callback){
+            var self=this;
+            var id=params.id;
+            var baseUrl=params.baseUrl;
+            var referrer=Location.referrer;
+            if(referrer){
+                var req={};
+                req.query=Location.query;
+                if(req.query.dir){
+                    this._navigation(id,this.nav,baseUrl,callback);
+                }else{
+                    var query=Location.getQuery(referrer);
+                    if(!query){
+                        query={};
+                    }
+                    this.$navigationProvider.get({filter:query.$filter},function(err,data){
+                        self.nav=data;
+                        self._navigation(id,data,baseUrl,callback);
+                    });
+                }
+            }else{
+                var navigation_=$Navigation.get({id:id});
+                callback(null,navigation_);
+            }
+        },
+
+        _navigation:function(id,data,baseUrl,callback){
+            var navigation_=$Navigation.get({id:id, data:data, baseUrl:baseUrl});
+            callback(null,navigation_);
+        }
+
+    }, {
+
+        navigation:function(params,callback){
+            this.constructor.navigation(params,callback);
+        }
+    });
+
+
+
+    container.registerType('DetailNavigationService', DetailNavigationService);
 
     return app;
 })(elliptical.module);
@@ -2093,7 +2152,6 @@ elliptical.module = (function (app) {
             var page=req.params.id;
 
             Try(next,function(){
-                //var query=user.getFilter(req.query);
                 var keys = Object.keys( req.query );
                 var query;
                 if(keys[0]){
@@ -2124,9 +2182,9 @@ elliptical.module = (function (app) {
 
         Detail:function(req,res,next){
             var id=req.params.id;
-            var User=req.service('User');
-            var Event=req.service('Event');
-            var Try=req.service('Try');
+            var User=container.getType('User');
+            var Event=container.getType('Event');
+            var Try=container.getType('Try');
             Event.emit('route.search.morph',{});
             Try(next,function(){
                 User.get({id:id},function(err,data){
@@ -2142,9 +2200,9 @@ elliptical.module = (function (app) {
         },
 
         Create:function(req,res,next){
-            var User=req.service('User');
-            var Event=req.service('Event');
-            var Try=req.service('Try');
+            var User=container.getType('User');
+            var Event=container.getType('Event');
+            var Try=container.getType('Try');
             Event.emit('route.search.morph',{});
             Try(next,function(){
                 res.context.user={};
@@ -2324,6 +2382,54 @@ elliptical.module = (function (app) {
 
     return app;
 })(elliptical.module);
+// generic detail view binding
+/// node element with the ea binding in the view should have the following attributes set:
+/// service,label
+
+
+elliptical.module = (function (app) {
+    var container = app.container;
+
+    elliptical.binding('detail', function (node) {
+        var $node=$(node);
+        var serviceName=$node.attr('service');
+        var label=$node.attr('label');
+        var Service=container.getType(serviceName);
+        var ConfirmDialog=container.getType('ConfirmDialog');
+        var Notify=container.getType('Notify');
+
+        var deleteItem=$node.find('[action="delete"]');
+        this.event($node,this.click,'[action="delete"]:not(.disabled)',onDelete);
+
+        function onDelete(event){
+            var dialog=new ConfirmDialog();
+            dialog.setContent('Confirm Delete','Are you sure you wish to delete this ' + label.toLowerCase() + '?');
+            dialog.show(function(confirmed){
+                if(confirmed){
+                    _handleDelete();
+                }
+            });
+        }
+
+        function _handleDelete(){
+            var id=deleteItem[0].dataset.id;
+            var notify= new Notify();
+            Service.delete({id:id},function(err,data){
+                var message=(err) ? 'Error: Error deleting ' + label.toLowerCase() : label + ' has been deleted';
+                notify.show(message);
+                _addDisabledClass();
+            });
+        }
+
+        function _addDisabledClass(){
+            deleteItem.addClass('disabled');
+        }
+
+    });
+
+
+    return app;
+})(elliptical.module);
 /// Calls the Dialog service when the FAB is clicked
 
 elliptical.module = (function (app) {
@@ -2349,6 +2455,146 @@ elliptical.module = (function (app) {
 
 
         }
+    });
+
+    return app;
+})(elliptical.module);
+/// generic list view binding
+/// node element with the ea binding in the view should have the following attributes set:
+/// service,label,item-selector,detail-action
+/// the items in the list/repeating item element should have a data-id attribute set
+/// detail-action is a string template , e.g.,'/Detail/[id]', that replaces [id] with the data-id value
+
+/// this binding should be complimented by a binding or listener that has an Event listener(Event.on, not a DOM listener)
+/// for the EVT_CHANNEL in order to sync the count display
+
+elliptical.module = (function (app) {
+
+    var EVT_CHANNEL='list.change';
+    var container=app.container;
+
+    elliptical.binding('list',function(node){
+        var $node=$(node);
+        var serviceName=$node.attr('service');
+        var Async=container.getType('Async');
+        var label=$node.attr('label');
+        label=(label && label !==undefined) ? label : 'item(s)';
+        var itemSelector=$node.attr('item-selector');
+        itemSelector=(itemSelector && itemSelector !==undefined) ? itemSelector : 'li';
+        var detailAction=$node.attr('detail-action');
+        var Service=container.getType(serviceName);
+        var ConfirmDialog=container.getType('ConfirmDialog');
+        var Notify=container.getType('Notify');
+        var Event=container.getType('Event');
+        var Location=container.getType('Location');
+
+
+        var deleteItem=$node.find('[action="delete"]');
+        var viewItem=$node.find('[action="view"]');
+        var editItem=$node.find('[action="edit"]');
+
+        this.event($(document),'md.checkbox.change',onCheckboxChange);
+        this.event($node,this.click,'[action="delete"]:not(.disabled)',onDelete);
+        this.event($node,this.click,'[action="view"]:not(.disabled)',onView);
+        this.event($node,this.click,'[action="edit"]:not(.disabled)',onView);
+
+        function onCheckboxChange(event,data){
+            if(data.checked){
+                _removeDisabledClass();
+            }else{
+                if(!_multiChecked()){
+                    _addDisabledClass();
+                }
+            }
+        }
+
+        function onDelete(event){
+            var dialog=new ConfirmDialog();
+            dialog.setContent('Confirm Delete','Are you sure you wish to delete the selected ' + label.toLowerCase() + '(s)?');
+            dialog.show(function(confirmed){
+                if(confirmed){
+                    _handleDelete();
+                }
+            });
+        }
+
+        function onView(event){
+            var checked=_getMultiChecked();
+            var id=checked[0].dataset.id;
+            var url=detailAction.replace('[id]',id);
+            Location.redirect(url);
+        }
+
+        function _removeDisabledClass(){
+            deleteItem.removeClass('disabled');
+            viewItem.removeClass('disabled');
+            editItem.removeClass('disabled');
+        }
+
+        function _addDisabledClass(){
+            deleteItem.addClass('disabled');
+            viewItem.addClass('disabled');
+            editItem.addClass('disabled');
+        }
+
+        function _getMultiChecked(){
+            return $node.find('md-checkbox[checked]');
+        }
+
+        function _multiChecked(){
+            var checked=_getMultiChecked();
+            return (checked.length > 1);
+        }
+
+        function _handleDelete(){
+            var checked=_getMultiChecked();
+            var notify= new Notify();
+            if(checked.length<2){
+                var id=checked[0].dataset.id;
+                _deleteFromDOM(id);
+                Service.delete({id:id},function(err,data){
+                    (err) ? notify.show('Error: Error deleting ' + label.toLowerCase()) : onDeletions([id],label + ' has been deleted',1,notify);
+                });
+
+            }else{
+                var ids=_getIds(checked);
+                var funcArray=[];
+                ids.forEach(function(i){
+                    funcArray.push(function(callback){Service.delete({id:i},callback)});
+                });
+                Async(funcArray,function(err,results){
+                    (err) ? notify.show('Error: Error deleting ' + label.toLowerCase() + '(s)') : onDeletions(ids,label + '(s) have been deleted',ids.length,notify);
+                });
+            }
+        }
+
+        function onDeletions(ids,msg,count,notify){
+            _deleteIdsFromDOM(ids);
+            notify.show(msg);
+            _addDisabledClass();
+            Event.emit(EVT_CHANNEL,{removed:count});
+        }
+
+
+        function _deleteIdsFromDOM(ids){
+            ids.forEach(function(id){
+                _deleteFromDOM(id);
+            });
+        }
+
+        function _deleteFromDOM(id){
+            $node.find(itemSelector + '[data-id="' + id + '"]').remove();
+        }
+
+        function _getIds(checked){
+            var ids=[];
+            var length=checked.length;
+            for(var i=0; i<length; i++){
+                ids.push(checked[i].dataset.id);
+            }
+            return ids;
+        }
+
     });
 
     return app;
@@ -2440,123 +2686,6 @@ elliptical.module = (function (app) {
 
     });
 
-
-    return app;
-})(elliptical.module);
-/// order grid view binding
-
-elliptical.module = (function (app) {
-
-    var EVT_CHANNEL='list.change';
-    var container=app.container;
-
-     elliptical.binding('order-grid',function(node){
-
-         var Order=container.getType('Order');
-         var ConfirmDialog=container.getType('ConfirmDialog');
-         var Notify=container.getType('Notify');
-         var Event=container.getType('Event');
-         var Location=container.getType('Location');
-
-         var $node=$(node);
-         var deleteItem=$node.find('[action="delete"]');
-         var viewItem=$node.find('[action="view"]');
-
-         this.event($(document),'md.checkbox.change',onCheckboxChange);
-         this.event($node,this.click,'[action="delete"]:not(.disabled)',onDelete);
-         this.event($node,this.click,'[action="view"]:not(.disabled)',onView);
-
-         function onCheckboxChange(event,data){
-             if(data.checked){
-                 _removeDisabledClass();
-             }else{
-                 if(!_multiChecked()){
-                     _addDisabledClass();
-                 }
-             }
-         }
-
-         function onDelete(event){
-             var dialog=new ConfirmDialog();
-             dialog.setContent('Confirm Delete','Are you sure you wish to delete the selected order(s)?');
-             dialog.show(function(confirmed){
-                 if(confirmed){
-                     _handleDelete();
-                 }
-             });
-         }
-
-         function onView(event){
-             var checked=_getMultiChecked();
-             var id=checked[0].dataset.id;
-             var url='/Order/Detail/' + id;
-             Location.redirect(url);
-         }
-
-         function _removeDisabledClass(){
-             deleteItem.removeClass('disabled');
-             viewItem.removeClass('disabled');
-         }
-
-         function _addDisabledClass(){
-             deleteItem.addClass('disabled');
-             viewItem.addClass('disabled');
-         }
-
-         function _getMultiChecked(){
-             return $node.find('md-checkbox[checked]');
-         }
-
-         function _multiChecked(){
-             var checked=_getMultiChecked();
-             return (checked.length > 1);
-         }
-
-         function _handleDelete(){
-             var checked=_getMultiChecked();
-             var notify= new Notify();
-             if(checked.length<2){
-                 var id=checked[0].dataset.id;
-                 _deleteFromDOM(id);
-                 Order.delete({id:id},function(err,data){
-                     (err) ? notify.show('Error: Error deleting order') : onDeletions('Order has been deleted',1,notify);
-                 });
-
-             }else{
-                 var ids=_getIds(checked);
-                 _deleteIdsFromDOM(ids);
-                 Order.delete({ids:ids},function(err,data){
-                     (err) ? notify.show('Error: Error deleting orders') : onDeletions('Orders have been deleted',ids.length,notify);
-                 });
-             }
-         }
-
-         function onDeletions(msg,count,notify){
-             notify.show(msg);
-             _addDisabledClass();
-             Event.emit(EVT_CHANNEL,{removed:count});
-         }
-
-         function _deleteIdsFromDOM(ids){
-             ids.forEach(function(id){
-                _deleteFromDOM(id);
-             });
-         }
-
-         function _deleteFromDOM(id){
-             $node.find('grid-item[data-id="' + id + '"]').remove();
-         }
-
-         function _getIds(checked){
-             var ids=[];
-             var length=checked.length;
-             for(var i=0; i<length; i++){
-                 ids.push(checked[i].dataset.id);
-             }
-             return ids;
-         }
-
-     });
 
     return app;
 })(elliptical.module);
@@ -2915,122 +3044,6 @@ elliptical.module = (function (app) {
              }
 
              blockItem[0].dataset.active=active;
-         }
-
-     });
-
-    return app;
-})(elliptical.module);
-/// user-list view binding
-
-elliptical.module = (function (app) {
-
-    var EVT_CHANNEL='list.change';
-    var container=app.container;
-
-     elliptical.binding('user-list',function(node){
-         var User=container.getType('User');
-         var ConfirmDialog=container.getType('ConfirmDialog');
-         var Notify=container.getType('Notify');
-         var Event=container.getType('Event');
-         var Location=container.getType('Location');
-
-         var $node=$(node);
-         var deleteItem=$node.find('[action="delete"]');
-         var editItem=$node.find('[action="edit"]');
-
-         this.event($(document),'md.checkbox.change',onCheckboxChange);
-         this.event($node,this.click,'[action="delete"]:not(.disabled)',onDelete);
-         this.event($node,this.click,'[action="edit"]:not(.disabled)',onEdit);
-
-         function onCheckboxChange(event,data){
-             if(data.checked){
-                 _removeDisabledClass();
-             }else{
-                 if(!_multiChecked()){
-                     _addDisabledClass();
-                 }
-             }
-         }
-
-         function onDelete(event){
-             var dialog=new ConfirmDialog();
-             dialog.setContent('Confirm Delete','Are you sure you wish to delete the selected user(s)?');
-             dialog.show(function(confirmed){
-                 if(confirmed){
-                     _handleDelete();
-                 }
-             });
-         }
-
-         function onEdit(event){
-             var checked=_getMultiChecked();
-             var id=checked[0].dataset.id;
-             var url='/User/Detail/' + id;
-             Location.redirect(url);
-         }
-
-         function _removeDisabledClass(){
-             deleteItem.removeClass('disabled');
-             editItem.removeClass('disabled');
-         }
-
-         function _addDisabledClass(){
-             deleteItem.addClass('disabled');
-             editItem.addClass('disabled');
-         }
-
-         function _getMultiChecked(){
-             return $node.find('md-checkbox[checked]');
-         }
-
-         function _multiChecked(){
-             var checked=_getMultiChecked();
-             return (checked.length > 1);
-         }
-
-         function _handleDelete(){
-             var checked=_getMultiChecked();
-             var notify= new Notify();
-             if(checked.length<2){
-                 var id=checked[0].dataset.id;
-                 _deleteFromDOM(id);
-                 User.delete({id:id},function(err,data){
-                     (err) ? notify.show('Error: Error deleting user') : onDeletions('User has been deleted',1,notify);
-                 });
-
-             }else{
-                 var ids=_getIds(checked);
-                 _deleteIdsFromDOM(ids);
-                 User.delete({ids:ids},function(err,data){
-                     (err) ? notify.show('Error: Error deleting users') : onDeletions('Users have been deleted',ids.length,notify);
-                 });
-             }
-         }
-
-         function onDeletions(msg,count,notify){
-             notify.show(msg);
-             _addDisabledClass();
-             Event.emit(EVT_CHANNEL,{removed:count});
-         }
-
-         function _deleteIdsFromDOM(ids){
-             ids.forEach(function(id){
-                _deleteFromDOM(id);
-             });
-         }
-
-         function _deleteFromDOM(id){
-             $node.find('li[data-id="' + id + '"]').remove();
-         }
-
-         function _getIds(checked){
-             var ids=[];
-             var length=checked.length;
-             for(var i=0; i<length; i++){
-                 ids.push(checked[i].dataset.id);
-             }
-             return ids;
          }
 
      });
